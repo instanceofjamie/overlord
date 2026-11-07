@@ -41,3 +41,18 @@ Transport strategy:
 FinOps accounting should separate the existing game-server rental, any relay/device hosting, independent director hosting, and model inference. A director hosted on the user's own PC has no additional cloud standing cost, but depends on that PC being available.
 
 Sources: [HostHavoc hosting](https://hosthavoc.com/en-GB/game-servers/arma-3/), [HostHavoc mods guide](https://demo.hosthavoc.com/en-GB/wiki/game-servers/arma-3/install-workshop-mods), [Arma extensions](https://wiki.arma3.io/topics/Extensions.html), [CfgRemoteExec](https://wiki.arma3.io/topics/CfgRemoteExec.html).
+
+
+## HostHavoc support update — 2026-11-07 (preliminary)
+
+HostHavoc support reports that there are **currently no restrictions on .dll files for Arma 3 servers**. They say a separately launched executable or service alongside the hosted game server is **likely not possible**. Outbound HTTPS and broader security/hosting policy are being escalated for confirmation. Treat DLL loading as promising but untested, and outbound HTTPS as unconfirmed.
+
+**Current design direction:** a server-side SQF observer/executor with a small asynchronous native extension, communicating outbound to an independently deployed director (local workstation or cloud). Do not require a second process on the HostHavoc machine. Keep the trusted-client relay as a contingency until extension transport is demonstrated.
+
+Host validation still required:
+- [ ] Explicit HostHavoc response regarding outbound HTTPS from a DLL in the Arma process and applicable policy
+- [ ] Confirm x64 extension actually loads and logs on a test server
+- [ ] Confirm an outbound connection and a command round trip without interrupting server frames
+- [ ] Confirm deployable DLL file location, updates and server restart process
+
+Source: direct HostHavoc support correspondence supplied by the project maintainer.
