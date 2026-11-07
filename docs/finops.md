@@ -56,3 +56,16 @@ Host validation still required:
 - [ ] Confirm deployable DLL file location, updates and server restart process
 
 Source: direct HostHavoc support correspondence supplied by the project maintainer.
+
+## HostHavoc follow-up — 2026-11-07
+
+HostHavoc has now followed up: **"You should be able to use your tool without issue, however, you would not be able to have anything launch alongside the server. For something like that, you would require either a dedicated server or VPS."**
+
+Working interpretation:
+- A server-side native extension is acceptable in principle; verify loading, network reachability and callback/polling behaviour in a real game session.
+- No separately launched Python executable or service on the HostHavoc game host.
+- The director must be independently deployable: developer machine for prototyping, or an optional externally hosted deployment.
+- The preferred integration is outbound HTTPS from the native extension; this still requires an empirical end-to-end smoke test, not an assumption of unconditional network access.
+- A VPS is an option, **not** a requirement, for the external director. Event-driven services may offer lower idle costs.
+
+This updates the preliminary concerns tracked by [issue #22](https://github.com/instanceofjamie/overlord/issues/22). Preserve a trusted-client relay as fallback only if in-server extension networking fails.
