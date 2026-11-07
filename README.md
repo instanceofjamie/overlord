@@ -40,8 +40,8 @@ This is a provisional architecture; see [#2](https://github.com/instanceofjamie/
 
 ## Contributing and licensing
 
-This project is being developed in the open; architecture and issue feedback are welcome. Contributor documentation and an explicit software licence are tracked in [#1](https://github.com/instanceofjamie/overlord/issues/1).
+This project is being developed in the open; architecture and issue feedback are welcome. Contributor documentation is tracked in [#1](https://github.com/instanceofjamie/overlord/issues/1).
 
-**No open-source licence has been selected yet.** A public repository does not automatically grant reuse or redistribution rights.
+**Licence:** Original OVERLORD source and project documentation are made available under the [Apache License 2.0](LICENSE) (SPDX: `Apache-2.0`). This permits commercial use, modifications and redistribution subject to the licence conditions. Bohemia Interactive game content and third-party components remain subject to their own terms; do not assume they are included under Apache-2.0. See the [licensing record](docs/licensing-options.md) for the project policy.
 
 OVERLORD is an independent community project, not affiliated with Bohemia Interactive.
