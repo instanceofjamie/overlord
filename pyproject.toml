@@ -21,6 +21,7 @@ dev = ["pytest>=8.3,<10", "ruff>=0.9,<1", "mypy>=1.14,<2"]
 [project.scripts]
 overlord = "overlord.cli:main"
 overlord-simulate = "overlord.simulate:main"
+overlord-inspect = "overlord.inspect:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/overlord"]

@@ -10,3 +10,5 @@ var/
 *.sqlite3-*
 dist/
 *.egg-info/
+build/
+*.dll

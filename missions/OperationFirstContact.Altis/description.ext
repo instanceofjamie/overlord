@@ -1,0 +1,8 @@
+// SPDX-License-Identifier: Apache-2.0
+onLoadName = "Operation First Contact";
+onLoadMission = "Observation only: shoot a checkpoint guard, then inspect the recorded event.";
+author = "OVERLORD contributors";
+respawn = 0;
+disabledAI = 1;
+enableDebugConsole = 1;
+saving = 0;

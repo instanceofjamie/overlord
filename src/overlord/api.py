@@ -74,6 +74,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         store.create_session(session)
         return session
 
+    @app.get("/v1/sessions", response_model=list[SessionCreate])
+    def sessions(limit: Annotated[int, Query(ge=1, le=100)] = 20) -> list[SessionCreate]:
+        return store.sessions(limit)
+
     @app.post("/v1/observations", response_model=IngestResult, status_code=201)
     def ingest(observation: Observation, response: Response) -> IngestResult:
         recorded = store.record(observation)

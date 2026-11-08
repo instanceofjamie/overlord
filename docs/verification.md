@@ -53,3 +53,93 @@ reported evidence from 2026-11-07, not checks repeated for this documentation up
 No SITREP, provenance fields, faction reasoning, transport probe or game integration
 was implemented or verified today. Native HTTP and DLL/HTTPS compatibility still
 require #26/#22 evidence on the actual production server. No issues were closed.
+
+## Local observation demo — 2026-11-08
+
+Started from `27ae4d9` on main, after PR #24 merged. Read current issues #2, #4,
+#6, #8, #11, #12, #25 and #26, plus prior repository documentation. No repository
+AGENTS.md instructions were found. The local executable metadata and operator
+confirmation both identify Arma 3 2.22; this is not a runtime networking probe.
+
+Checks performed for this increment:
+
+- Python 3.12 regression suite: **25 passed**, with the same upstream Starlette/
+  HTTPX TestClient deprecation warning. Ruff lint/format, strict mypy (10 source
+  modules) and `git diff --check` passed.
+- New session-list API: empty state, registration ordering, bounds and restart
+  persistence; inspector: pagination and empty state tested. Existing protocol
+  validation/deduplication tests remain intact. No schema/migration change.
+- Native queue test passed on Linux and Windows: capacity includes pending and unread results,
+  duplicate enqueue does not add work, changed pending payload rejects, terminal
+  polling consumes a result, and reset clears only completed entries.
+- MinGW Windows x64 DLL and smoke harness built. PE exports were checked;
+  imports are Windows system libraries (including WinHTTP and Ole32 for OS GUIDs) (no separate MinGW runtime).
+- Executed the cross-compiled Windows harness via Windows PowerShell against an
+  isolated real loopback FastAPI service: registration 201, mission_started 201,
+  checkpoint_attacked 201, repeated attack 200. Inspector retrieved exactly two
+  events, including UNKNOWN attribution. Enqueues measured 0ms in these samples.
+  Stopped the director and observed result `[0]`, still with a 0ms enqueue. These
+  were synthetic harness observations, **not an actual in-game attack**.
+- Per-run/event UUIDs use Windows CoCreateGuid rather than Eden-seeded random values;
+  Windows ABI harness checked distinct UUIDs. Missing UUID support disables delivery
+  while detection/debug remain active. Installer copy and overwrite-refusal test passed
+  against a disposable Windows game tree; the actual game was not modified.
+- SQF-VM v2026.04.03-ed9f5f5 parsed all four SQF scripts, description.ext and
+  mission.sqm. Configs were wrapped in a class for the parser's root restriction.
+  This is syntax-only evidence; SQF-VM cannot validate game handlers, placement,
+  locality, DLL loading or scheduling in Arma. Reproduce using
+  `python tools/check_sqf.py PATH_TO_SQFVM`.
+
+A Windows CI job builds with MSVC, runs the native queue test and a real DLL/API
+smoke test (offline, online, retries, duplicate storage, invalid version, inspector
+and stalled response), then packages the DLL and mission. Check its run conclusion
+on the PR before using the artifact; local manual evidence above is separate.
+
+Not verified here: interactive Eden/hosted multiplayer, actual projectile detection,
+terrain placement, production native HTTP, BattlEye compatibility, headless-client
+ownership migration, HostHavoc or remote HTTPS/authentication. No game commands,
+inference, cloud resources or third-party integrations were added. The deterministic
+SITREP remains deferred pending successful playable connection.
+
+Follow [the Windows playtest](local-demo.md); report runtime productVersion, session
+UUID, detection/delivery messages and inspector output. Keep broad issues open until
+those acceptance criteria are actually met.
+
+### First interactive feedback: Eden load warning
+
+The operator reported “Error when loading the scenario” while opening the mission
+in Eden, before Play. The flushed RPT contained no specific scenario-load diagnostic.
+Review found missing EditorData ItemIDProvider and Camera metadata in the hand-written
+SQM. Added nextID=2 (above entity IDs 0 and 1), an initial camera, and ScenarioData
+author metadata. All six mission files still pass the syntax check. Updated both
+installed profile copies with backups for the operator's retest. This is a candidate
+fix; successful Eden reopening and actual observation delivery remain unconfirmed.
+
+
+### Operator-confirmed local observation path
+
+On 2026-11-08 the operator confirmed the Eden warning disappeared after the metadata
+correction, then reported two recorded events after the firing playtest: mission
+start and checkpoint attack (`mission_started` / `checkpoint_attacked` in the schema).
+This is operator-reported real-game evidence on the previously confirmed vanilla
+Arma 3 2.22 installation, distinct from the synthetic harness checks above.
+The exact session UUID, raw JSON and RPT were not supplied with this confirmation.
+Editor versus hosted-MP execution was not specified. Game downtime/recovery,
+repeat-hit suppression, fatal-first-hit coverage and dedicated multiplayer remain
+unconfirmed by this report. The local observation goal is demonstrated; broader
+issues remain open and deterministic SITREP work remains a subsequent increment.
+
+
+### Operator-confirmed director downtime and recovery
+
+On 2026-11-08 the operator confirmed the follow-up test worked as expected:
+start the scenario with Overlord stopped, detect mission start and checkpoint harm
+inside Arma while gameplay continues, observe director-unavailable status, then
+start Overlord without restarting the scenario and inspect exactly two delivered
+events. This is operator-reported evidence of in-game buffering, retry/recovery
+and acknowledged storage without duplicate records in that test. It is separate
+from automated transport tests. No raw session UUID/JSON or frame-time measurement
+was supplied. Repeat-hit and fatal-first-hit cases, dedicated/hosted multiplayer,
+HostHavoc and remote authentication/HTTPS remain outside the confirmed evidence.
+The requested local observation-and-recovery demonstration is complete; no broad
+roadmap issue is closed on that basis.

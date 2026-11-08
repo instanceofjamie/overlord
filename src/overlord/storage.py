@@ -76,6 +76,13 @@ class Store:
                 (str(session.session_id), session.model_dump_json()),
             )
 
+    def sessions(self, limit: int) -> list[SessionCreate]:
+        with self.connection() as conn:
+            rows = conn.execute(
+                "SELECT document FROM sessions ORDER BY rowid DESC LIMIT ?", (limit,)
+            ).fetchall()
+            return [SessionCreate.model_validate_json(row[0]) for row in rows]
+
     def record(self, observation: Observation) -> bool:
         with self.connection() as conn:
             conn.execute("BEGIN IMMEDIATE")
