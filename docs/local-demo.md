@@ -7,12 +7,13 @@ the Altis airfield. This demo only observes: no director orders, planning or mod
 calls. Scenario setup creates the guards and barriers locally on the server; these
 are mission content, not remotely requested actions.
 
-**Verification status:** Python regression tests and the real Windows DLL/API path
-have been tested. The mission has not yet been played in Eden or multiplayer by
-this implementation session. Terrain placement, SQF execution, in-game DLL loading
-and firing detection require the short playtest below. A successful transport
-harness is not evidence that a real shot was observed. SITREP formatting is deferred
-until the playable connection is confirmed; the inspector prints the recorded facts.
+**Verification status:** automated Python and Windows DLL/API checks passed. On
+2026-11-08 the operator confirmed that Eden opens without warning after the metadata
+fix and that the firing playtest produced two recorded events: mission start and
+checkpoint attack. This is operator-reported real-game evidence, not just the
+transport harness. Interactive downtime/recovery and repeat-hit/fatal-hit cases
+still need confirmation. The inspector prints recorded facts; SITREP formatting
+remains a subsequent increment. See [dated evidence](verification.md).
 
 ## 1. Obtain/build and install
 

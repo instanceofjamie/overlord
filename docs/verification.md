@@ -114,3 +114,17 @@ SQM. Added nextID=2 (above entity IDs 0 and 1), an initial camera, and ScenarioD
 author metadata. All six mission files still pass the syntax check. Updated both
 installed profile copies with backups for the operator's retest. This is a candidate
 fix; successful Eden reopening and actual observation delivery remain unconfirmed.
+
+
+### Operator-confirmed local observation path
+
+On 2026-11-08 the operator confirmed the Eden warning disappeared after the metadata
+correction, then reported two recorded events after the firing playtest: mission
+start and checkpoint attack (`mission_started` / `checkpoint_attacked` in the schema).
+This is operator-reported real-game evidence on the previously confirmed vanilla
+Arma 3 2.22 installation, distinct from the synthetic harness checks above.
+The exact session UUID, raw JSON and RPT were not supplied with this confirmation.
+Editor versus hosted-MP execution was not specified. Game downtime/recovery,
+repeat-hit suppression, fatal-first-hit coverage and dedicated multiplayer remain
+unconfirmed by this report. The local observation goal is demonstrated; broader
+issues remain open and deterministic SITREP work remains a subsequent increment.
