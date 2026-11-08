@@ -2,7 +2,10 @@
 # Director foundation
 
 Implemented in the first Python slice for #7; partial groundwork for #2, #8,
-#9 and #10. This is an observation recorder, not a playable AI director.
+#9 and #10. This is an observation recorder, not an AI planner or command executor.
+The [local Arma demo](local-demo.md) adds a server-only observer and a Windows DLL
+fallback for 2.22; its API path is tested, but interactive game behaviour remains
+unverified. See [transport evidence and ecosystem review](transport-local.md).
 
 ```mermaid
 flowchart LR
@@ -10,11 +13,11 @@ flowchart LR
     API --> DB[(SQLite sessions and observations)]
     API -->|Retrieve recorded observations| CLI
     CLI --> Mock[Deterministic no_action provider]
-    SQF[Future authoritative SQF observer] -.-> Transport[Future transport selected under issue 26]
+    SQF[Server-authoritative demo SQF - playtest pending] -.-> Transport[Future transport selected under issue 26]
     Transport -.-> Native[Candidate native webRequest - unverified]
-    Transport -.-> DLL[Candidate asynchronous x64 extension]
+    Transport -.-> DLL[Local 2.22 x64 extension fallback - game playtest pending]
     Native -.->|Outbound HTTPS subject to issue 22| API
-    DLL -.->|Outbound HTTPS subject to issue 22| API
+    DLL -.->|Loopback HTTP only in local demo| API
 ```
 
 ## Implemented components
@@ -31,12 +34,14 @@ flowchart LR
   Ingestion never invokes inference. The CLI calls the mock locally to demonstrate
   restraint; no decision is persisted or exposed as an executable command.
 - `simulate.py`: finite HTTP client with timeouts and a fresh sample session per run.
+- `inspect.py`: reads the latest or selected session through the API, without a provider.
 - `logging.py`: JSON application logs with timestamp, level and event correlation
   IDs; payloads, prompts, environment and credentials are not logged. Validation
   errors do not echo submitted values. Uvicorn access logging is disabled.
 
 Solid arrows describe today’s local demonstration; dotted arrows are future
-candidates, not implemented integrations. All observation retrieval goes through
+production candidates; the DLL fallback is implemented and tested outside Arma,
+but its dotted game path still requires interactive playtest. All observation retrieval goes through
 the API; the simulation has no direct database connection.
 
 ## Experience direction and operating modes
@@ -50,7 +55,7 @@ logic without building a generic engine framework.
 
 | Mode | Behaviour | Status |
 | --- | --- | --- |
-| Observation-only | Record events without spawning units, changing waypoints or issuing gameplay commands | Local API recorder exists; live SQF collection does not |
+| Observation-only | Record events without spawning units, changing waypoints or issuing gameplay commands | API and local demo SQF exist; real game delivery awaits playtest |
 | Recommendation-only | Record proposals, rationale, evidence references and expected effects without dispatch | Planned evaluation under [#15](https://github.com/instanceofjamie/overlord/issues/15) before live execution |
 | Authorised execution | Explicit operator configuration, capability/ownership checks, authoritative validation and human override gate dispatch | Future work; command lifecycle under [#13](https://github.com/instanceofjamie/overlord/issues/13) is required |
 
@@ -107,6 +112,25 @@ Transactions make concurrent retries safe. Events are append-only through the AP
 order, with limit 1–100 and nonnegative offset. Delayed or out-of-order events are
 accepted as reported observations; timestamps do not trigger actions, reorder receipts or establish
 faction knowledge. A checkpoint event need not wait for mission_started delivery.
+
+## Local demonstration adapter
+
+`missions/OperationFirstContact.Altis` owns scenario initialization and two
+server-local guards. Positive Hit and Killed handlers share one synchronous latch.
+The first harm/death of either guard produces one attack observation, including
+UNKNOWN attribution if instigator evidence is absent. See the playtest guide for
+the precise definition; suppression alone is not an attack observation here.
+The director cannot spawn units or issue commands; mission setup alone creates the
+scenario objects. The adapter owns this checkpoint, not arbitrary scenario units.
+
+The SQF outbox registers a new per-run session, then submits immutable v1.0 events.
+The DLL's worker sends only to loopback port 8000. Detection, acknowledgement and
+unavailability statuses are separate; HTTP acknowledgement follows database commit.
+In-memory buffering, retries and DLL lifecycle limits are in the transport record.
+No schema change was needed. `GET /v1/sessions?limit=20` (1–100) lists registrations
+newest-first; `overlord-inspect --latest` or `--session UUID` reads the observations
+through the API, without a model. Existing session registration does not reorder
+that listing. No SITREP is claimed before the real game connection is verified.
 
 ## Persistence and migrations
 
@@ -182,4 +206,5 @@ later requirement for dispatch. Complete ecosystem research under [#25](https://
 before finalising broader interfaces or expanding the planner, and transport
 selection under [#26](https://github.com/instanceofjamie/overlord/issues/26) before bridge implementation. Host compatibility
 ([#22](https://github.com/instanceofjamie/overlord/issues/22)) and mission acceptance ([#3](https://github.com/instanceofjamie/overlord/issues/3)) remain verification gates.
-No Arma integration, bridge, Bedrock, dialogue, campaign, Antistasi, SaaS or billing is included.
+A local-only demo observer and DLL fallback now exist; production bridge validation,
+Bedrock, dialogue, campaign, Antistasi, SaaS and billing remain outside this slice.

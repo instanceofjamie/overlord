@@ -4,7 +4,7 @@
 
 OVERLORD aims to direct the cooperative Arma 3 experience through intent, pacing, communication and bounded operational interventions. Arma and existing tactical or campaign systems retain their simulation responsibilities. Future action proposals must respect faction knowledge and be validated by the authoritative game server.
 
-> **Status:** Pre-alpha Python observation recorder. There is no playable Arma release yet.
+> **Status:** Pre-alpha observation recorder with a local Arma 3 demo awaiting interactive playtest. No AI gameplay execution.
 
 ## First playable target
 
@@ -41,7 +41,8 @@ This is a provisional architecture; see [#2](https://github.com/instanceofjamie/
 ## Experience-director modes
 
 - **Observation-only:** collect and record events without issuing gameplay commands.
-  This PR implements the local Python recorder; live SQF collection is future work.
+  The local recorder and demo SQF observer are implemented; the real in-game path
+  awaits interactive playtest.
 - **Recommendation-only (planned):** record proposals, rationale, evidence and expected
   effects without dispatching commands; evaluate this before live execution under [#15](https://github.com/instanceofjamie/overlord/issues/15).
 - **Authorised execution (planned):** explicit operator configuration, capability and
@@ -59,6 +60,17 @@ This project is being developed in the open; architecture and issue feedback are
 **Licence:** Original OVERLORD source and project documentation are made available under the [Apache License 2.0](LICENSE) (SPDX: `Apache-2.0`). This permits commercial use, modifications and redistribution subject to the licence conditions. Bohemia Interactive game content and third-party components remain subject to their own terms; do not assume they are included under Apache-2.0. See the [licensing record](docs/licensing-options.md) for the project policy.
 
 OVERLORD is an independent community project, not affiliated with Bohemia Interactive.
+
+## Local Arma observation demo
+
+The first vanilla Altis mission and asynchronous Windows x64 bridge are in
+[the Windows setup and playtest guide](docs/local-demo.md). Start the independent
+loopback director, load Operation First Contact and shoot a checkpoint guard;
+then use `overlord-inspect --latest` (or `--session UUID`) to read persisted events.
+The API never invokes a model or changes gameplay. The DLL/API path is tested;
+interactive Arma firing and terrain placement still need the documented playtest.
+[Transport evidence](docs/transport-local.md) selects the DLL fallback for the
+installed 2.22 build; native HTTP and HostHavoc production transport remain open.
 
 ## Local director quick start
 
@@ -128,8 +140,7 @@ it does not implement their full decision, command or game integration criteria.
 ### Next useful increment
 
 Produce a bounded, deterministic structured SITREP from recorded observations under
-[#6](https://github.com/instanceofjamie/overlord/issues/6), separating observed facts, inference and unknowns. No SITREP is
-implemented here. Recommendation-only evaluation should precede live execution.
+[#6](https://github.com/instanceofjamie/overlord/issues/6), separating observed facts, inference and unknowns. SITREP formatting remains deferred until the playable connection is verified. Recommendation-only evaluation should precede live execution.
 The implemented initial observation contract v1.0 retains its current schema and
 version validation; ecosystem research under [#25](https://github.com/instanceofjamie/overlord/issues/25) and real SQF requirements
 under [#6](https://github.com/instanceofjamie/overlord/issues/6)/[#8](https://github.com/instanceofjamie/overlord/issues/8) should inform its evolution before broader interfaces

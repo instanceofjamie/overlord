@@ -188,3 +188,14 @@ def test_storage_failure_is_503(client, settings):
         conn.execute("DROP TABLE observations")
         conn.execute("DROP TABLE sessions")
     assert client.get("/health").status_code == 503
+
+
+def test_session_inspection(client, settings):
+    assert client.get("/v1/sessions").json() == []
+    first = session(client)
+    second = session(client)
+    assert client.post("/v1/sessions", json=first).status_code == 201
+    assert client.get("/v1/sessions?limit=1").json() == [second]
+    assert client.get("/v1/sessions?limit=101").status_code == 422
+    with TestClient(create_app(settings)) as restarted:
+        assert restarted.get("/v1/sessions").json() == [second, first]
