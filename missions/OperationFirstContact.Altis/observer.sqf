@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 // Loaded only by initServer. No remoteExec and no client-supplied observations.
 OL_fnc_uuid = {
+    // Use OS GUIDs for delivered identities, independent of Eden's randomSeed.
+    private _nativeId = "";
+    if (missionNamespace getVariable ["OL_nativeIds", true]) then {
+        private _result = "overlord_bridge" callExtension ["uuid", []];
+        if (count (_result select 0) == 36) then {_nativeId = _result select 0; OL_nativeIds = true} else {
+            OL_nativeIds = false;
+        };
+    };
+    if (_nativeId != "") exitWith {_nativeId};
+    // Missing DLL: still label debug detections, but no request can be delivered.
     private _chars = "0123456789abcdef";
     private _id = "";
     for "_i" from 0 to 35 do {

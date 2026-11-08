@@ -22,6 +22,11 @@ int main(int argc, char** argv) {
         auto entry = reinterpret_cast<Entry>(GetProcAddress(module, "RVExtensionArgs"));
         if (!entry || !GetProcAddress(module, "RVExtensionVersion") || !GetProcAddress(module, "RVExtension"))
             throw std::runtime_error("ABI exports missing");
+        char first[64]{}, second[64]{};
+        if (entry(first, sizeof(first), "uuid", nullptr, 0) ||
+            entry(second, sizeof(second), "uuid", nullptr, 0) ||
+            std::string(first).size() != 36 || std::string(first) == second)
+            throw std::runtime_error("Per-run UUID generation failed");
         std::ifstream file(argv[4]);
         if (!file) throw std::runtime_error("Cannot open JSON fixture");
         std::string body((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());

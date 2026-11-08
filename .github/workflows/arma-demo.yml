@@ -21,6 +21,7 @@ jobs:
       - run: cmake --build build/windows --config Release
       - run: ctest --test-dir build/windows -C Release --output-on-failure
       - run: python tools/test_bridge.py build/windows/Release
+      - run: ./tools/test_install.ps1 -DllPath build/windows/Release/overlord_bridge_x64.dll
       - name: Package demo
         shell: pwsh
         run: |

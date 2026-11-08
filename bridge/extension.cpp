@@ -2,6 +2,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <winhttp.h>
+#include <objbase.h>
+#include <cstdio>
 #include <chrono>
 #include <cstring>
 #include <stdexcept>
@@ -99,6 +101,17 @@ extern "C" __declspec(dllexport) int __stdcall RVExtensionArgs(
     char* out, int size, const char* function, const char** args, int count) {
     try {
         std::string command(function);
+        if (command == "uuid" && count == 0) {
+            GUID guid;
+            if (FAILED(CoCreateGuid(&guid))) throw std::runtime_error("UUID failed");
+            char text[37];
+            std::snprintf(text, sizeof(text),
+                "%08lx-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                guid.Data1, guid.Data2, guid.Data3,
+                guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3],
+                guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
+            output(out, size, text); return 0;
+        }
         std::string id = count > 0 ? argument(args[0]) : "";
         std::string kind = count > 1 ? argument(args[1]) : "";
         std::string body = count > 2 ? argument(args[2]) : "";

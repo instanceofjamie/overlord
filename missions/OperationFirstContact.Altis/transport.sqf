@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // One request at a time, fixed localhost DLL endpoint. Never waits for HTTP in callExtension.
+if !(missionNamespace getVariable ["OL_nativeIds", false]) exitWith {
+    ["DIRECTOR UNAVAILABLE: bridge UUID support missing. Detection remains active; install current DLL and restart Arma."] call OL_fnc_status;
+};
 private _ready = "overlord_bridge" callExtension ["reset", []];
 if ((_ready select 0) != "ready") exitWith {
     ["DIRECTOR UNAVAILABLE: bridge missing/blocked. Detection remains active; restart after installation."] call OL_fnc_status;

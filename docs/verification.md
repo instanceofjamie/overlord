@@ -69,17 +69,21 @@ Checks performed for this increment:
 - New session-list API: empty state, registration ordering, bounds and restart
   persistence; inspector: pagination and empty state tested. Existing protocol
   validation/deduplication tests remain intact. No schema/migration change.
-- Native queue test passed on Linux: capacity includes pending and unread results,
+- Native queue test passed on Linux and Windows: capacity includes pending and unread results,
   duplicate enqueue does not add work, changed pending payload rejects, terminal
   polling consumes a result, and reset clears only completed entries.
 - MinGW Windows x64 DLL and smoke harness built. PE exports were checked;
-  imports are KERNEL32.dll, msvcrt.dll and WINHTTP.dll (no separate MinGW runtime).
+  imports are Windows system libraries (including WinHTTP and Ole32 for OS GUIDs) (no separate MinGW runtime).
 - Executed the cross-compiled Windows harness via Windows PowerShell against an
   isolated real loopback FastAPI service: registration 201, mission_started 201,
   checkpoint_attacked 201, repeated attack 200. Inspector retrieved exactly two
   events, including UNKNOWN attribution. Enqueues measured 0ms in these samples.
   Stopped the director and observed result `[0]`, still with a 0ms enqueue. These
   were synthetic harness observations, **not an actual in-game attack**.
+- Per-run/event UUIDs use Windows CoCreateGuid rather than Eden-seeded random values;
+  Windows ABI harness checked distinct UUIDs. Missing UUID support disables delivery
+  while detection/debug remain active. Installer copy and overwrite-refusal test passed
+  against a disposable Windows game tree; the actual game was not modified.
 - SQF-VM v2026.04.03-ed9f5f5 parsed all four SQF scripts, description.ext and
   mission.sqm. Configs were wrapped in a class for the parser's root restriction.
   This is syntax-only evidence; SQF-VM cannot validate game handlers, placement,

@@ -38,6 +38,7 @@ PR adds neither WebAPI support nor permissive CORS to the Python service.
 It accepts default SQF-escaped string arguments (unquotes/dedoubles them); the smoke
 harness exercises this encoding. Arma calls `"overlord_bridge"`, without `_x64`.
 
+- `uuid []`: creates an OS GUID without network I/O, independent of Eden random seeds.
 - `post [ticket_uuid, "session"|"event", json]`: returns `queued`, `busy`, `full` or
   `invalid`; **queued is not delivered**. Payload bound: 2,048 bytes after decoding.
 - `poll [ticket_uuid]`: returns `[-1]` while pending/lock busy, `[-2]` for an unknown

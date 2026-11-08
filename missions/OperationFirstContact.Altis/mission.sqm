@@ -2,6 +2,7 @@
 version=53;
 class EditorData { moveGridStep=1; angleGridStep=0.2617994; scaleGridStep=1; autoGroupingDist=10; };
 binarizationWanted=0;
+randomSeed=17112026;
 sourceName="Operation First Contact - OVERLORD observation demo";
 addons[]={"A3_Characters_F_BLUFOR","A3_Map_Altis"};
 class Mission
