@@ -11,8 +11,9 @@ are mission content, not remotely requested actions.
 2026-11-08 the operator confirmed that Eden opens without warning after the metadata
 fix and that the firing playtest produced two recorded events: mission start and
 checkpoint attack. This is operator-reported real-game evidence, not just the
-transport harness. Interactive downtime/recovery and repeat-hit/fatal-hit cases
-still need confirmation. The inspector prints recorded facts; SITREP formatting
+transport harness. The operator also confirmed detection during director downtime and delivery of
+exactly two events after starting it without restarting the mission. Repeat-hit/
+fatal-hit cases and dedicated multiplayer still need confirmation. The inspector prints recorded facts; SITREP formatting
 remains a subsequent increment. See [dated evidence](verification.md).
 
 ## 1. Obtain/build and install

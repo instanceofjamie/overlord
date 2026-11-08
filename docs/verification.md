@@ -128,3 +128,18 @@ Editor versus hosted-MP execution was not specified. Game downtime/recovery,
 repeat-hit suppression, fatal-first-hit coverage and dedicated multiplayer remain
 unconfirmed by this report. The local observation goal is demonstrated; broader
 issues remain open and deterministic SITREP work remains a subsequent increment.
+
+
+### Operator-confirmed director downtime and recovery
+
+On 2026-11-08 the operator confirmed the follow-up test worked as expected:
+start the scenario with Overlord stopped, detect mission start and checkpoint harm
+inside Arma while gameplay continues, observe director-unavailable status, then
+start Overlord without restarting the scenario and inspect exactly two delivered
+events. This is operator-reported evidence of in-game buffering, retry/recovery
+and acknowledged storage without duplicate records in that test. It is separate
+from automated transport tests. No raw session UUID/JSON or frame-time measurement
+was supplied. Repeat-hit and fatal-first-hit cases, dedicated/hosted multiplayer,
+HostHavoc and remote authentication/HTTPS remain outside the confirmed evidence.
+The requested local observation-and-recovery demonstration is complete; no broad
+roadmap issue is closed on that basis.
