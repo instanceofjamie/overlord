@@ -1,10 +1,25 @@
 // SPDX-License-Identifier: Apache-2.0
 version=53;
-class EditorData { moveGridStep=1; angleGridStep=0.2617994; scaleGridStep=1; autoGroupingDist=10; };
+class EditorData
+{
+    moveGridStep=1;
+    angleGridStep=0.2617994;
+    scaleGridStep=1;
+    autoGroupingDist=10;
+    class ItemIDProvider { nextID=2; };
+    class Camera
+    {
+        pos[]={14500,80,15950};
+        dir[]={0,-0.4472136,0.8944272};
+        up[]={0,0.8944272,0.4472136};
+        aside[]={1,0,0};
+    };
+};
 binarizationWanted=0;
 randomSeed=17112026;
 sourceName="Operation First Contact - OVERLORD observation demo";
 addons[]={"A3_Characters_F_BLUFOR","A3_Map_Altis"};
+class ScenarioData { author="OVERLORD contributors"; };
 class Mission
 {
     class Intel { briefingName="Operation First Contact"; resistanceWest=0; resistanceEast=1; year=2035; month=6; day=24; hour=12; minute=0; startWeather=0; forecastWeather=0; };

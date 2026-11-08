@@ -104,3 +104,13 @@ SITREP remains deferred pending successful playable connection.
 Follow [the Windows playtest](local-demo.md); report runtime productVersion, session
 UUID, detection/delivery messages and inspector output. Keep broad issues open until
 those acceptance criteria are actually met.
+
+### First interactive feedback: Eden load warning
+
+The operator reported “Error when loading the scenario” while opening the mission
+in Eden, before Play. The flushed RPT contained no specific scenario-load diagnostic.
+Review found missing EditorData ItemIDProvider and Camera metadata in the hand-written
+SQM. Added nextID=2 (above entity IDs 0 and 1), an initial camera, and ScenarioData
+author metadata. All six mission files still pass the syntax check. Updated both
+installed profile copies with backups for the operator's retest. This is a candidate
+fix; successful Eden reopening and actual observation delivery remain unconfirmed.
