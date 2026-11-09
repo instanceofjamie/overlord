@@ -15,8 +15,7 @@ const assert = require('node:assert/strict');
   await page.getByText('Read-only: use the private launch link or enter its credential').waitFor();
   assert(await page.locator('#apply').isDisabled());
   await page.goto(url+'/operator#token=browser-test-operator');
-  // New page navigation is needed because same-document fragment changes do not rerun script.
-  await page.reload();
+  // The launch link must also authorise an already-open read-only tab, without a reload.
   await page.getByText('Authorised launch operator: approval and mode controls available').waitFor();
   assert(!page.url().includes('token='));
   await page.locator('#selection').selectOption('review');
