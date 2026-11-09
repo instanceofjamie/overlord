@@ -3,7 +3,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$ArmaPath,
     [string]$BindAddress = '127.0.0.1',
-    [ValidateRange(1024,65532)][int]$Port = 2302,
+    [ValidateRange(1024,65532)][int]$Port = 2402,
     [string]$DllPath = '',
     [string]$RuntimePath = '',
     [switch]$PrepareOnly

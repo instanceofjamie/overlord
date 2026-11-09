@@ -56,7 +56,7 @@ scope: no router changes, UPnP, public HTTP or firewall changes are performed.
    reserve owner=2; slots=4`, and confirmed registration/mission-start delivery.
    Zero connected players is correctly recorded as zero, not an invented player.
 5. Client: Multiplayer → Server Browser → Direct Connect → your server’s private
-   LAN IPv4 address (including on the server PC), port `2302`,
+   LAN IPv4 address (including on the server PC), port `2402`,
    use the **join** password, select a NATO scout slot and continue. A second player
    selects a different slot. No `-mod=@OVERLORD` is required on clients. Launch
    vanilla explicitly with `-mod=` when starting the client executable directly:
@@ -84,6 +84,17 @@ Python director: its loopback endpoint remains on the server PC. No router mappi
 is needed. If a demonstrated LAN connection failure is due to Windows Firewall,
 allow only this executable/UDP server ports on the private profile for the friend's
 address; obtain/confirm that local rule before changing it. The launcher makes none.
+
+The playable launcher defaults to game port **2402**, query **2403** and Steam
+socket **2404**. During the same-PC handoff, the client held `0.0.0.0:2304` while
+the dedicated server held the same port on the Wi-Fi address. Separate port ranges
+remove this observed overlap. After this change the operator reported the server
+appeared in Direct Connect. A complete A2S_INFO query on 2403 also passed. The
+mission registered session `9a23fa1a-5e94-4780-9bfd-6976833c3eb2`; server logs
+confirmed authoritative initialisation and recommendation-only mode. An actual
+player entering a scout slot and two-player play are not established by this evidence.
+Use the printed port when overriding `-Port`. Do not use the game's usual 2302
+value with this launcher unless you explicitly selected it.
 
 The documented Arma [startup parameters](https://community.bistudio.com/wiki/Arma_3:_Startup_Parameters)
 and [server config](https://community.bistudio.com/wiki/Arma_3:_Server_Config_File)
