@@ -3,6 +3,25 @@ onLoadName = "Operation First Contact";
 onLoadMission = "Reconnoitre, choose your approach, report and extract. Combat is optional.";
 author = "OVERLORD contributors";
 respawn = 0;
-disabledAI = 1;
+disabledAI = 0; // Retain vacant playable slots for JIP; server parks their AI.
 enableDebugConsole = 0;
 saving = 0;
+
+class CfgRemoteExec
+{
+    class Functions
+    {
+        mode = 1; jip = 0;
+        class OL_fnc_requestProgress { allowedTargets = 2; jip = 0; };
+        class OL_fnc_requestTakeover { allowedTargets = 2; jip = 0; };
+        // Vanilla engine effects; no execVM/call/spawn/debug-console escape hatch.
+        class BIS_fnc_effectKilledAirDestruction { allowedTargets = 0; jip = 0; };
+        class BIS_fnc_effectKilledSecondaries { allowedTargets = 0; jip = 0; };
+        class BIS_fnc_fire { allowedTargets = 0; jip = 0; };
+        class BIS_fnc_objectVar { allowedTargets = 0; jip = 0; };
+        class BIS_fnc_setCustomSoundController { allowedTargets = 0; jip = 0; };
+    };
+    class Commands { mode = 0; jip = 0; };
+};
+
+class Header { gameType = "COOP"; minPlayers = 1; maxPlayers = 4; };

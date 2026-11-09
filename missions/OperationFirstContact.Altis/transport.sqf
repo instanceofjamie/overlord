@@ -46,7 +46,7 @@ while {true} do {
             OL_outbox deleteAt 0;
             if (_kind == "command" && {count _reply == 2}) then {
                 // isNil code executes unscheduled: validation, latch and assignment cannot interleave.
-                isNil {[_reply select 1] call OL_fnc_receiveCommand};
+                isNil {[_reply select 1] call OL_fnc_receiveCommand; call OL_fnc_publish};
             };
             _unavailable = false;
         } else {

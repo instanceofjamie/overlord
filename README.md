@@ -89,6 +89,16 @@ that assigning a movement order proves arrival. See [architecture](docs/architec
 and [verification](docs/verification.md). No inference, spawning commands or new
 gameplay command family was added.
 
+## Local dedicated multiplayer validation
+
+[Dedicated setup, authority model and two-player matrix](docs/local-dedicated.md)
+reuse the installed Windows server and existing bridge. A real headless probe has
+exercised order assignment, ack interruption/recovery, forced duplicate delivery and
+fresh-session rejection. It uses synthetic attack telemetry: **two-player completion,
+JIP/reconnect, shared UI and live human override still await human testing**. No
+server download, router changes or public hosting are required. Four playable slots
+are provided; unused slots are parked rather than added as AI patrol members.
+
 ## Local director quick start
 
 Requires Python 3.12+ with pip and venv. No Arma, AWS account, cloud credentials or

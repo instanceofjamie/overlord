@@ -1,0 +1,167 @@
+{
+  "verification": "Live Windows dedicated-server run with one human player; not two-player acceptance",
+  "date": "2026-11-09",
+  "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+  "server_game_port": 2402,
+  "sources": [
+    "Director SQLite read-only snapshot",
+    "arma3server_x64_2026-11-09_20-34-57.rpt (session-matched server log)",
+    "Operator reported entering mission, recon, attack and extraction"
+  ],
+  "limits": [
+    "No physical reserve arrival tracking",
+    "Repeated attack reports exercised commitment guard; not forced duplicate command delivery in this run",
+    "Two-player synchronisation, late join, reconnect, director interruption and human override not exercised in this run"
+  ],
+  "observations": [
+    {
+      "protocol_version": "1.0",
+      "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+      "event_id": "dba5a8cb-aaeb-44de-ae4d-dbc6bb6aacf8",
+      "timestamp": "2026-11-09T20:35:11Z",
+      "event_type": "mission_started",
+      "payload": {
+        "player_count": 0
+      }
+    },
+    {
+      "protocol_version": "1.0",
+      "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+      "event_id": "88ef6112-121e-487c-ab73-d306b673b5ae",
+      "timestamp": "2026-11-09T20:37:32Z",
+      "event_type": "operation_progress",
+      "payload": {
+        "milestone": "briefing_complete"
+      }
+    },
+    {
+      "protocol_version": "1.0",
+      "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+      "event_id": "497629ae-a449-428c-9daf-e68481110763",
+      "timestamp": "2026-11-09T20:39:59Z",
+      "event_type": "operation_progress",
+      "payload": {
+        "milestone": "recon_reported"
+      }
+    },
+    {
+      "protocol_version": "1.0",
+      "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+      "event_id": "4e061c30-64ba-46ce-bb5d-a0e0e8fd85d6",
+      "timestamp": "2026-11-09T20:41:32Z",
+      "event_type": "checkpoint_attacked",
+      "payload": {
+        "checkpoint_id": "checkpoint_alpha",
+        "attacking_side": "BLUFOR",
+        "report_channel": "guard_radio",
+        "reserve_available": true
+      }
+    },
+    {
+      "protocol_version": "1.0",
+      "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+      "event_id": "ea9acd64-7ca5-42d4-ac51-5e49df4e3bbd",
+      "timestamp": "2026-11-09T20:41:36Z",
+      "event_type": "checkpoint_attacked",
+      "payload": {
+        "checkpoint_id": "checkpoint_alpha",
+        "attacking_side": "BLUFOR",
+        "report_channel": "guard_radio",
+        "reserve_available": true
+      }
+    },
+    {
+      "protocol_version": "1.0",
+      "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+      "event_id": "4794ce34-cadb-4c6e-8f16-9e2f7d6f907f",
+      "timestamp": "2026-11-09T20:45:20Z",
+      "event_type": "operation_progress",
+      "payload": {
+        "milestone": "extracted"
+      }
+    }
+  ],
+  "responses": [
+    {
+      "event_id": "4e061c30-64ba-46ce-bb5d-a0e0e8fd85d6",
+      "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+      "state": "executed",
+      "reason": "Guard radio reports checkpoint harm; configured reserve response",
+      "created_at": "2026-11-09T20:41:33.089747+00:00",
+      "command": {
+        "protocol_version": "1.0",
+        "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+        "command_id": "30fa518b-8898-513e-8bd2-5b36018ba0aa",
+        "idempotency_key": "30fa518b-8898-513e-8bd2-5b36018ba0aa",
+        "triggering_event": "4e061c30-64ba-46ce-bb5d-a0e0e8fd85d6",
+        "action": "dispatch_reserve",
+        "asset": "reserve_alpha",
+        "location": "response_alpha",
+        "expires_at": "2026-11-09T20:43:00Z"
+      },
+      "committed": true,
+      "acknowledgement": {
+        "protocol_version": "1.0",
+        "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+        "command_id": "30fa518b-8898-513e-8bd2-5b36018ba0aa",
+        "idempotency_key": "30fa518b-8898-513e-8bd2-5b36018ba0aa",
+        "status": "executed",
+        "result": "movement_order_assigned"
+      },
+      "approved_at": "2026-11-09T20:41:33.089747+00:00",
+      "approval_kind": "enabled_rule",
+      "issued_at": "2026-11-09T20:41:34.261251+00:00",
+      "ack_received_at": "2026-11-09T20:41:34.878533+00:00"
+    },
+    {
+      "event_id": "ea9acd64-7ca5-42d4-ac51-5e49df4e3bbd",
+      "session_id": "9a23fa1a-5e94-4780-9bfd-6976833c3eb2",
+      "state": "no_action",
+      "reason": "reserve already committed; unresolved execution never permits replacement",
+      "created_at": "2026-11-09T20:41:37.547657+00:00",
+      "command": null,
+      "committed": false,
+      "acknowledgement": null,
+      "approved_at": null,
+      "approval_kind": null
+    }
+  ],
+  "response_control": [
+    {
+      "observation_only": false,
+      "automatic": true,
+      "enabled": true,
+      "paused": false
+    }
+  ],
+  "server_evidence": [
+    "20:35:11 CallExtension loaded: overlord_bridge (D:\\Games\\Steam\\steamapps\\common\\Arma 3\\@OVERLORD\\overlord_bridge_x64.dll) [OVERLORD local observation brid]",
+    "20:35:11 \"OVERLORD SESSION 9a23fa1a-5e94-4780-9bfd-6976833c3eb2; productVersion [\"\"Arma 3\"\",\"\"Arma3\"\",222,154089,\"\"Stable\"\",true,\"\"Windows\"\",\"\"x64\"\",\"\"\"\"]; transport async x64 DLL\"",
+    "20:35:11 \"OVERLORD AUTHORITY dedicated=true; reserve local=true; reserve owner=2; slots=4\"",
+    "20:35:11 \"OVERLORD DETECTED mission_started (event dba5a8cb-aaeb-44de-ae4d-dbc6bb6aacf8)\"",
+    "20:35:11 \"OVERLORD DELIVERY CONFIRMED session (9a23fa1a-5e94-4780-9bfd-6976833c3eb2), session 9a23fa1a-5e94-4780-9bfd-6976833c3eb2\"",
+    "20:35:11 \"OVERLORD DELIVERY CONFIRMED mission_started (dba5a8cb-aaeb-44de-ae4d-dbc6bb6aacf8), session 9a23fa1a-5e94-4780-9bfd-6976833c3eb2\"",
+    "20:35:12 \"OVERLORD RESPONSE no_action; execution enabled=false paused=false (local veto=false)\"",
+    "20:37:27 \"OVERLORD RESPONSE no_action; execution enabled=true paused=false (local veto=false)\"",
+    "20:37:32 \"OVERLORD DETECTED operation_progress (event 88ef6112-121e-487c-ab73-d306b673b5ae)\"",
+    "20:37:32 \"OVERLORD HQ: Move to recon_alpha. Observe the checkpoint from cover, then use Report checkpoint reconnaissance. Engagement is optional.\"",
+    "20:37:33 \"OVERLORD DELIVERY CONFIRMED operation_progress (88ef6112-121e-487c-ab73-d306b673b5ae), session 9a23fa1a-5e94-4780-9bfd-6976833c3eb2\"",
+    "20:39:59 \"OVERLORD DETECTED operation_progress (event 497629ae-a449-428c-9daf-e68481110763)\"",
+    "20:39:59 \"OVERLORD HQ: Recon report received locally. Return to extraction_alpha and choose Extract and debrief. You may disengage without firing.\"",
+    "20:39:59 \"OVERLORD DELIVERY CONFIRMED operation_progress (497629ae-a449-428c-9daf-e68481110763), session 9a23fa1a-5e94-4780-9bfd-6976833c3eb2\"",
+    "20:41:32 \"OVERLORD Checkpoint harm observed locally. A reserve response requires a surviving guard radio report and operator permission.\"",
+    "20:41:32 \"OVERLORD DETECTED checkpoint_attacked (event 4e061c30-64ba-46ce-bb5d-a0e0e8fd85d6)\"",
+    "20:41:33 \"OVERLORD DELIVERY CONFIRMED checkpoint_attacked (4e061c30-64ba-46ce-bb5d-a0e0e8fd85d6), session 9a23fa1a-5e94-4780-9bfd-6976833c3eb2\"",
+    "20:41:34 \"OVERLORD RESPONSE issued; execution enabled=true paused=false (local veto=false)\"",
+    "20:41:34 \"OVERLORD ORDER APPLIED 30fa518b-8898-513e-8bd2-5b36018ba0aa; waypoint count=2\"",
+    "20:41:34 \"OVERLORD RESERVE executed: movement_order_assigned (30fa518b-8898-513e-8bd2-5b36018ba0aa)\"",
+    "20:41:35 \"OVERLORD DELIVERY CONFIRMED reserve acknowledgement (30fa518b-8898-513e-8bd2-5b36018ba0aa), session 9a23fa1a-5e94-4780-9bfd-6976833c3eb2\"",
+    "20:41:36 \"OVERLORD RESPONSE executed; execution enabled=true paused=false (local veto=false)\"",
+    "20:41:36 \"OVERLORD DETECTED checkpoint_attacked (event ea9acd64-7ca5-42d4-ac51-5e49df4e3bbd)\"",
+    "20:41:37 \"OVERLORD DELIVERY CONFIRMED checkpoint_attacked (ea9acd64-7ca5-42d4-ac51-5e49df4e3bbd), session 9a23fa1a-5e94-4780-9bfd-6976833c3eb2\"",
+    "20:41:38 \"OVERLORD RESPONSE no_action; execution enabled=true paused=false (local veto=false)\"",
+    "20:45:20 \"OVERLORD DETECTED operation_progress (event 4794ce34-cadb-4c6e-8f16-9e2f7d6f907f)\"",
+    "20:45:20 \"OVERLORD HQ: Reconnaissance and extraction complete. Review After-action report in the action menu or diary. Director delivery may still be pending.\"",
+    "20:45:20 \"OVERLORD DELIVERY CONFIRMED operation_progress (4794ce34-cadb-4c6e-8f16-9e2f7d6f907f), session 9a23fa1a-5e94-4780-9bfd-6976833c3eb2\""
+  ]
+}
