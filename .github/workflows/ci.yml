@@ -21,3 +21,24 @@ jobs:
       - run: ruff format --check .
       - run: mypy src/overlord
       - run: pytest
+      - name: SQF syntax and runtime progression
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v2026.04.03-ed9f5f5 --repo SQFvm/runtime --pattern sqfvm_linux_x64_clang.zip --dir "$RUNNER_TEMP/sqfvm"
+          unzip "$RUNNER_TEMP/sqfvm/sqfvm_linux_x64_clang.zip" -d "$RUNNER_TEMP/sqfvm"
+          chmod +x "$RUNNER_TEMP/sqfvm/sqfvm_linux_x64_clang/sqfvm"
+          python tools/check_sqf.py "$RUNNER_TEMP/sqfvm/sqfvm_linux_x64_clang/sqfvm"
+          python tools/test_mission_flow.py "$RUNNER_TEMP/sqfvm/sqfvm_linux_x64_clang/sqfvm"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Browser regression dependencies
+        run: |
+          npm install --prefix "$RUNNER_TEMP/overlord-browser" playwright@1.60.0
+          "$RUNNER_TEMP/overlord-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Operator panel browser regression
+        env:
+          NODE_PATH: ${{ runner.temp }}/overlord-browser/node_modules
+          OVERLORD_TEST_SCREENSHOT: ${{ runner.temp }}/overlord-operator.png
+        run: python tools/test_operator.py

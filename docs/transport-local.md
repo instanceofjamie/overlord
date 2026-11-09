@@ -6,6 +6,23 @@ Related issues: [#26](https://github.com/instanceofjamie/overlord/issues/26),
 [#11](https://github.com/instanceofjamie/overlord/issues/11),
 [#22](https://github.com/instanceofjamie/overlord/issues/22).
 
+## Playable-operation extension — 2026-11-09
+
+The existing worker, endpoints, queue, retry IDs and movement command remain.
+Command polling optionally requests `include_report=true` to append bounded factual
+AAR lines in slot 6. Without the flag, the original six-slot wire is unchanged.
+The response-body cap is 2048 bytes. The updated mission accepts both shapes;
+update mission, DLL and service together. `operation_progress` adds a closed
+milestone payload; checkpoint facts add guard report provenance and reserve
+availability. Legacy/unverified reports deliberately cannot authorize a response.
+
+Operator mutation endpoints now require the private launch credential, independently
+of the existing trusted-local game transport. No inbound game listener, remote URL,
+cloud infrastructure or additional game command family is added. The outbox now
+has 32 entries, reserves essential progress/ack capacity and remains mission-memory
+only. [Architecture](architecture.md) and [normal play workflow](local-demo.md) are
+the current contracts; older sections below record prior milestone evidence.
+
 ## Reserve-loop extension — 2026-11-09
 
 The same DLL worker now also accepts `post [ticket, "command"|"ack", json]`.

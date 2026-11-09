@@ -32,9 +32,11 @@ OL_fnc_ackCommand = {
 };
 OL_fnc_receiveCommand = {
     params ["_packet"];
-    if (!isServer || {!(_packet isEqualType [])} || {count _packet != 6}) exitWith {};
+    if (!isServer || {!(_packet isEqualType [])} || {!(count _packet in [6,7])}) exitWith {};
     _packet params ["_version", "_session", "_enabled", "_paused", "_command", "_status"];
     if (_version != "1.0" || {_session != OL_session} || {!(_enabled isEqualType true)} || {!(_paused isEqualType true)} || {!(_status isEqualType "")} || {!(_command isEqualType [])}) exitWith {};
+    OL_lastDirectorContact = diag_tickTime;
+    if (count _packet == 7 && {(_packet select 6) isEqualType []}) then {OL_directorReport = _packet select 6};
     OL_executionEnabled = _enabled;
     OL_directorPaused = _paused;
     private _display = format ["RESPONSE %1; execution enabled=%2 paused=%3 (local veto=%4)", _status, _enabled, _paused, OL_localPaused];
@@ -63,6 +65,7 @@ OL_fnc_receiveCommand = {
         private _utc = systemTimeUTC;
         if ((_utc select 0) > (_expiry select 0) || {(_utc select 0) == (_expiry select 0) && {dateToNumber (_utc select [0,5]) >= dateToNumber _expiry}}) then {_result = "expired"; _state = "expired"};
     };
+    if (_result == "" && {OL_stage in ["succeeded", "failed"]}) then {_result = "operation_complete"};
     if (_result == "" && {!OL_executionEnabled}) then {_result = "execution_disabled"};
     if (_result == "" && {OL_directorPaused || OL_localPaused}) then {_result = "paused"};
     if (_result == "" && {OL_reserveCommitted}) then {_result = "already_committed"};

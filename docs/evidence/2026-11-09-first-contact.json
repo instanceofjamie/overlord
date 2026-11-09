@@ -1,0 +1,247 @@
+{
+  "date": "2026-11-09",
+  "tested_source_commit": "a30e1417729c6cbfc005a7a153cca866ce2b0ea1",
+  "runtime": "Arma 3 x64 2.22.154089 Stable; local Eden operator playtest",
+  "scope": "Selected mission records only; no credentials, player identifiers or complete database/RPT copied",
+  "clock_note": "Game occurrence time and director receipt time use separate clocks. Do not infer precise transport latency from their difference.",
+  "limits": [
+    "Reserve arrival is not tracked.",
+    "One command in these records is not proof of exactly-once delivery or a forced duplicate replay test.",
+    "New-mission outage fallback, actual replacement of human orders, dedicated multiplayer and HostHavoc remain unverified."
+  ],
+  "sessions": [
+    {
+      "approach": "quiet_recon",
+      "session": {
+        "session_id": "4ce142e7-fb51-4461-8e5a-196a31823a66",
+        "mission_name": "Operation First Contact",
+        "map_name": "Altis"
+      },
+      "elapsed_game_seconds": 513,
+      "summary": {
+        "stage": "succeeded",
+        "reconnaissance_reported": true,
+        "engagement_recorded": false,
+        "outcome": "succeeded",
+        "accepted_progress_events": [
+          "476dc613-d3cd-4794-8c03-a944663d4b47",
+          "27a1372c-5e31-4ba2-bcef-64c5637e9416",
+          "11a47d2a-83e2-4dcb-b465-ad3bbca47844"
+        ],
+        "ignored_progress_events": []
+      },
+      "control_at_capture": {
+        "observation_only": false,
+        "automatic": true,
+        "enabled": true,
+        "paused": false
+      },
+      "control_last_changed_at": "2026-11-09T17:00:06.327642+00:00",
+      "control_note": "Execution was enabled only after successful extraction; no attack decisions exist.",
+      "observations": [
+        {
+          "protocol_version": "1.0",
+          "session_id": "4ce142e7-fb51-4461-8e5a-196a31823a66",
+          "event_id": "3f66ee0c-c292-4af2-ad2a-91cf0cb43540",
+          "timestamp": "2026-11-09T16:50:46Z",
+          "event_type": "mission_started",
+          "payload": {
+            "player_count": 1
+          }
+        },
+        {
+          "protocol_version": "1.0",
+          "session_id": "4ce142e7-fb51-4461-8e5a-196a31823a66",
+          "event_id": "476dc613-d3cd-4794-8c03-a944663d4b47",
+          "timestamp": "2026-11-09T16:51:13Z",
+          "event_type": "operation_progress",
+          "payload": {
+            "milestone": "briefing_complete"
+          }
+        },
+        {
+          "protocol_version": "1.0",
+          "session_id": "4ce142e7-fb51-4461-8e5a-196a31823a66",
+          "event_id": "27a1372c-5e31-4ba2-bcef-64c5637e9416",
+          "timestamp": "2026-11-09T16:55:52Z",
+          "event_type": "operation_progress",
+          "payload": {
+            "milestone": "recon_reported"
+          }
+        },
+        {
+          "protocol_version": "1.0",
+          "session_id": "4ce142e7-fb51-4461-8e5a-196a31823a66",
+          "event_id": "11a47d2a-83e2-4dcb-b465-ad3bbca47844",
+          "timestamp": "2026-11-09T16:59:19Z",
+          "event_type": "operation_progress",
+          "payload": {
+            "milestone": "extracted"
+          }
+        }
+      ],
+      "responses": [],
+      "rpt_source": "arma3_x64_2026-11-09_16-49-14.rpt",
+      "rpt_overlord_lines": [
+        "16:50:44 \"OVERLORD SESSION 4ce142e7-fb51-4461-8e5a-196a31823a66; productVersion [\"\"Arma 3\"\",\"\"Arma3\"\",222,154089,\"\"Stable\"\",true,\"\"Windows\"\",\"\"x64\"\",\"\"\"\"]; transport async x64 DLL\"",
+        "16:50:46 \"OVERLORD DETECTED mission_started (event 3f66ee0c-c292-4af2-ad2a-91cf0cb43540)\"",
+        "16:50:46 \"OVERLORD DELIVERY CONFIRMED session (4ce142e7-fb51-4461-8e5a-196a31823a66), session 4ce142e7-fb51-4461-8e5a-196a31823a66\"",
+        "16:50:47 \"OVERLORD DELIVERY CONFIRMED mission_started (3f66ee0c-c292-4af2-ad2a-91cf0cb43540), session 4ce142e7-fb51-4461-8e5a-196a31823a66\"",
+        "16:50:47 \"OVERLORD RESPONSE no_action; execution enabled=false paused=false (local veto=false)\"",
+        "16:51:13 \"OVERLORD DETECTED operation_progress (event 476dc613-d3cd-4794-8c03-a944663d4b47)\"",
+        "16:51:13 \"OVERLORD HQ: Move to recon_alpha. Observe the checkpoint from cover, then use Report checkpoint reconnaissance. Engagement is optional.\"",
+        "16:51:13 \"OVERLORD DELIVERY CONFIRMED operation_progress (476dc613-d3cd-4794-8c03-a944663d4b47), session 4ce142e7-fb51-4461-8e5a-196a31823a66\"",
+        "16:55:52 \"OVERLORD DETECTED operation_progress (event 27a1372c-5e31-4ba2-bcef-64c5637e9416)\"",
+        "16:55:52 \"OVERLORD HQ: Recon report received locally. Return to extraction_alpha and choose Extract and debrief. You may disengage without firing.\"",
+        "16:55:53 \"OVERLORD DELIVERY CONFIRMED operation_progress (27a1372c-5e31-4ba2-bcef-64c5637e9416), session 4ce142e7-fb51-4461-8e5a-196a31823a66\"",
+        "16:59:19 \"OVERLORD DETECTED operation_progress (event 11a47d2a-83e2-4dcb-b465-ad3bbca47844)\"",
+        "16:59:19 \"OVERLORD HQ: Reconnaissance and extraction complete. Review After-action report in the action menu or diary. Director delivery may still be pending.\"",
+        "16:59:19 \"OVERLORD DELIVERY CONFIRMED operation_progress (11a47d2a-83e2-4dcb-b465-ad3bbca47844), session 4ce142e7-fb51-4461-8e5a-196a31823a66\"",
+        "17:00:10 \"OVERLORD DIRECTOR UNAVAILABLE: request still pending; gameplay continues\"",
+        "17:00:11 \"OVERLORD RESPONSE no_action; execution enabled=true paused=false (local veto=false)\""
+      ]
+    },
+    {
+      "approach": "automatic_combat",
+      "session": {
+        "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+        "mission_name": "Operation First Contact",
+        "map_name": "Altis"
+      },
+      "elapsed_game_seconds": 483,
+      "summary": {
+        "stage": "succeeded",
+        "reconnaissance_reported": true,
+        "engagement_recorded": true,
+        "outcome": "succeeded",
+        "accepted_progress_events": [
+          "7172c2a0-3a70-471b-aae3-25e6d2e9c1c7",
+          "3cc99928-1c42-4e68-832a-56b93a2a314a",
+          "1a3baa6b-b2f0-4961-9230-e62dfb970ddc"
+        ],
+        "ignored_progress_events": []
+      },
+      "control_at_capture": {
+        "observation_only": false,
+        "automatic": true,
+        "enabled": true,
+        "paused": false
+      },
+      "control_last_changed_at": "2026-11-09T17:35:17.046405+00:00",
+      "control_note": "Automatic execution enabled before checkpoint attack; actual movement-order acknowledgement persisted.",
+      "observations": [
+        {
+          "protocol_version": "1.0",
+          "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+          "event_id": "1e0b32fe-42ac-4f4b-aacb-9525b49d1dae",
+          "timestamp": "2026-11-09T17:34:43Z",
+          "event_type": "mission_started",
+          "payload": {
+            "player_count": 1
+          }
+        },
+        {
+          "protocol_version": "1.0",
+          "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+          "event_id": "7172c2a0-3a70-471b-aae3-25e6d2e9c1c7",
+          "timestamp": "2026-11-09T17:34:45Z",
+          "event_type": "operation_progress",
+          "payload": {
+            "milestone": "briefing_complete"
+          }
+        },
+        {
+          "protocol_version": "1.0",
+          "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+          "event_id": "3cc99928-1c42-4e68-832a-56b93a2a314a",
+          "timestamp": "2026-11-09T17:37:26Z",
+          "event_type": "operation_progress",
+          "payload": {
+            "milestone": "recon_reported"
+          }
+        },
+        {
+          "protocol_version": "1.0",
+          "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+          "event_id": "5cbf4466-2d71-4f05-890d-2a2c8ef27f45",
+          "timestamp": "2026-11-09T17:39:10Z",
+          "event_type": "checkpoint_attacked",
+          "payload": {
+            "checkpoint_id": "checkpoint_alpha",
+            "attacking_side": "BLUFOR",
+            "report_channel": "guard_radio",
+            "reserve_available": true
+          }
+        },
+        {
+          "protocol_version": "1.0",
+          "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+          "event_id": "1a3baa6b-b2f0-4961-9230-e62dfb970ddc",
+          "timestamp": "2026-11-09T17:42:46Z",
+          "event_type": "operation_progress",
+          "payload": {
+            "milestone": "extracted"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "event_id": "5cbf4466-2d71-4f05-890d-2a2c8ef27f45",
+          "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+          "state": "executed",
+          "reason": "Guard radio reports checkpoint harm; configured reserve response",
+          "created_at": "2026-11-09T17:39:08.783152+00:00",
+          "command": {
+            "protocol_version": "1.0",
+            "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+            "command_id": "c56a3955-0147-5734-aa04-1a124e159edf",
+            "idempotency_key": "c56a3955-0147-5734-aa04-1a124e159edf",
+            "triggering_event": "5cbf4466-2d71-4f05-890d-2a2c8ef27f45",
+            "action": "dispatch_reserve",
+            "asset": "reserve_alpha",
+            "location": "response_alpha",
+            "expires_at": "2026-11-09T17:41:00Z"
+          },
+          "committed": true,
+          "acknowledgement": {
+            "protocol_version": "1.0",
+            "session_id": "af1e472c-5a4f-4fa4-83c0-d32c18ae25be",
+            "command_id": "c56a3955-0147-5734-aa04-1a124e159edf",
+            "idempotency_key": "c56a3955-0147-5734-aa04-1a124e159edf",
+            "status": "executed",
+            "result": "movement_order_assigned"
+          },
+          "approved_at": "2026-11-09T17:39:08.783152+00:00",
+          "approval_kind": "enabled_rule",
+          "issued_at": "2026-11-09T17:39:09.349809+00:00",
+          "ack_received_at": "2026-11-09T17:39:09.911045+00:00"
+        }
+      ],
+      "rpt_source": "arma3_x64_2026-11-09_17-32-04.rpt",
+      "rpt_overlord_lines": [
+        "17:34:42 \"OVERLORD SESSION af1e472c-5a4f-4fa4-83c0-d32c18ae25be; productVersion [\"\"Arma 3\"\",\"\"Arma3\"\",222,154089,\"\"Stable\"\",true,\"\"Windows\"\",\"\"x64\"\",\"\"\"\"]; transport async x64 DLL\"",
+        "17:34:43 \"OVERLORD DETECTED mission_started (event 1e0b32fe-42ac-4f4b-aacb-9525b49d1dae)\"",
+        "17:34:43 \"OVERLORD DELIVERY CONFIRMED session (af1e472c-5a4f-4fa4-83c0-d32c18ae25be), session af1e472c-5a4f-4fa4-83c0-d32c18ae25be\"",
+        "17:34:44 \"OVERLORD DELIVERY CONFIRMED mission_started (1e0b32fe-42ac-4f4b-aacb-9525b49d1dae), session af1e472c-5a4f-4fa4-83c0-d32c18ae25be\"",
+        "17:34:44 \"OVERLORD RESPONSE no_action; execution enabled=false paused=false (local veto=false)\"",
+        "17:34:45 \"OVERLORD DETECTED operation_progress (event 7172c2a0-3a70-471b-aae3-25e6d2e9c1c7)\"",
+        "17:34:45 \"OVERLORD HQ: Move to recon_alpha. Observe the checkpoint from cover, then use Report checkpoint reconnaissance. Engagement is optional.\"",
+        "17:34:45 \"OVERLORD DELIVERY CONFIRMED operation_progress (7172c2a0-3a70-471b-aae3-25e6d2e9c1c7), session af1e472c-5a4f-4fa4-83c0-d32c18ae25be\"",
+        "17:35:21 \"OVERLORD RESPONSE no_action; execution enabled=true paused=false (local veto=false)\"",
+        "17:37:26 \"OVERLORD DETECTED operation_progress (event 3cc99928-1c42-4e68-832a-56b93a2a314a)\"",
+        "17:37:26 \"OVERLORD HQ: Recon report received locally. Return to extraction_alpha and choose Extract and debrief. You may disengage without firing.\"",
+        "17:37:26 \"OVERLORD DELIVERY CONFIRMED operation_progress (3cc99928-1c42-4e68-832a-56b93a2a314a), session af1e472c-5a4f-4fa4-83c0-d32c18ae25be\"",
+        "17:39:10 \"OVERLORD Checkpoint harm observed locally. A reserve response requires a surviving guard radio report and operator permission.\"",
+        "17:39:10 \"OVERLORD DETECTED checkpoint_attacked (event 5cbf4466-2d71-4f05-890d-2a2c8ef27f45)\"",
+        "17:39:10 \"OVERLORD DELIVERY CONFIRMED checkpoint_attacked (5cbf4466-2d71-4f05-890d-2a2c8ef27f45), session af1e472c-5a4f-4fa4-83c0-d32c18ae25be\"",
+        "17:39:11 \"OVERLORD RESPONSE issued; execution enabled=true paused=false (local veto=false)\"",
+        "17:39:11 \"OVERLORD RESERVE executed: movement_order_assigned (c56a3955-0147-5734-aa04-1a124e159edf)\"",
+        "17:39:11 \"OVERLORD DELIVERY CONFIRMED reserve acknowledgement (c56a3955-0147-5734-aa04-1a124e159edf), session af1e472c-5a4f-4fa4-83c0-d32c18ae25be\"",
+        "17:39:13 \"OVERLORD RESPONSE executed; execution enabled=true paused=false (local veto=false)\"",
+        "17:42:46 \"OVERLORD DETECTED operation_progress (event 1a3baa6b-b2f0-4961-9230-e62dfb970ddc)\"",
+        "17:42:46 \"OVERLORD HQ: Reconnaissance and extraction complete. Review After-action report in the action menu or diary. Director delivery may still be pending.\"",
+        "17:42:47 \"OVERLORD DELIVERY CONFIRMED operation_progress (1a3baa6b-b2f0-4961-9230-e62dfb970ddc), session af1e472c-5a4f-4fa4-83c0-d32c18ae25be\""
+      ]
+    }
+  ]
+}

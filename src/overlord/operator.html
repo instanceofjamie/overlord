@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>OVERLORD local operator</title>
+<style>body{font:17px system-ui;background:#142029;color:#edf3f2;max-width:1050px;margin:3em auto;padding:1em}button,select,input{font:inherit;padding:.6em;margin:.3em}button{cursor:pointer}pre{white-space:pre-wrap;background:#21343e;padding:1em}label{display:block}article{border-top:1px solid #82978c;padding:1em 0}.warn{color:#ffd78c}</style>
+<h1>Operation First Contact</h1><p>Local operator panel · One configured reserve · No inference</p>
+<label>Session <select id="sessions"></select></label><p id="newSession" class="warn"></p><p id="connection">Connecting…</p>
+<p id="access" class="warn"></p><label>Launch credential <input id="credential" type="password" autocomplete="off"><button id="login">Use credential</button></label>
+<p id="mode"></p><label>Operating mode <select id="selection"><option value="recommend">Recommendation only (default)</option><option value="observe">Observation only</option><option value="review">Execution with manual review</option><option value="auto">Execution with automatic bounded approval</option></select></label>
+<button id="apply">Apply mode</button><button id="pause">Pause new dispatch</button><button id="resume">Resume</button>
+<p>Changing mode expires undispatched recommendations. Enable before a fresh attack; no stale proposal is released. Pause cannot stop an order already issued. Use the mission's “Pause / take human control” action for an immediate game-side veto.</p>
+<p id="error" role="alert" class="warn"></p><h2>Mission and factual debrief</h2><div id="summary"></div><h2>Response record</h2><div id="responses"></div>
+<script>
+'use strict';
+let token = new URLSearchParams(location.hash.slice(1)).get('token') || sessionStorage.getItem('overlordOperator') || '';
+history.replaceState(null,'',location.pathname);if(token)sessionStorage.setItem('overlordOperator',token);
+let current='',control={},busy=false;const el=id=>document.getElementById(id);
+async function api(path,method='GET',body){const r=await fetch(path,{method,headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:body?JSON.stringify(body):undefined});if(!r.ok){const data=await r.json();throw Error(data.detail||r.statusText)}return r.json()}
+async function refresh(){if(busy)return;busy=true;try{const sessions=await api('/v1/sessions');const chosen=el('sessions').value;el('sessions').replaceChildren();for(const s of sessions){const o=document.createElement('option');o.value=s.session_id;o.textContent=s.session_id+' · '+s.mission_name;el('sessions').append(o)}if(sessions.some(s=>s.session_id===chosen))el('sessions').value=chosen;current=el('sessions').value;el('newSession').replaceChildren();if(sessions.length&&sessions[0].session_id!==current){el('newSession').textContent='A newer mission session is available. ';const b=document.createElement('button');b.textContent='Switch to newest mission (starts recommendation-only)';b.onclick=()=>{el('sessions').value=sessions[0].session_id;refresh()};el('newSession').append(b)}if(!current){el('connection').textContent='Director online. Load the mission to register a new session.';return}
+const s=await api('/v1/sessions/'+current+'/operator-status');control=s.control;el('access').textContent=s.permission.explanation;for(const id of ['apply','pause','resume'])el(id).disabled=!s.permission.can_approve;
+el('connection').textContent='Director online · Confirm this session matches the UUID in Arma. New scenarios have new permissions/mode state.';
+el('mode').textContent='Current mode: '+s.mode+(control.paused?' · PAUSED':'');
+const d=s.debrief;el('summary').replaceChildren();
+for(const line of ['Operation: '+d.stage+' · Outcome: '+d.outcome,
+ 'Reconnaissance report: '+(d.reconnaissance_reported?'recorded':'not recorded'),
+ 'Checkpoint harm: '+(d.engagement_recorded?'recorded':'not recorded'),
+ 'OPFOR radio reports recorded: '+d.faction_reports.length+' (recon reports do not inform OPFOR)',
+ 'Reserve arrival: '+d.reserve_arrival,
+ 'Evidence: '+d.source]){const p=document.createElement('p');p.textContent=line;el('summary').append(p)}
+el('responses').replaceChildren();if(!s.responses.length){el('responses').textContent='No checkpoint attack decision recorded. Quiet reconnaissance requires no reserve intervention.'}
+for(const r of s.responses){const box=document.createElement('article');
+for(const line of [r.state.toUpperCase()+' · '+r.reason,
+ 'Trigger event: '+r.event_id+' · Recorded: '+r.created_at,
+ r.command?'Recommendation: '+r.command.asset+' to '+r.command.location+' · Expires: '+r.command.expires_at:'Deliberate no-action outcome',
+ 'Approval: '+(r.approved_at ? r.approval_kind+' at '+r.approved_at : 'none recorded'),
+ 'Command issued: '+(r.issued_at||'not recorded'),
+ 'Arma result: '+(r.acknowledgement ? r.acknowledgement.status+' / '+r.acknowledgement.result : 'no acknowledgement recorded')]){const p=document.createElement('p');p.textContent=line;box.append(p)}if(r.state==='proposed'&&control.enabled&&!control.paused&&!control.observation_only){const b=document.createElement('button');b.textContent='Approve this fresh recommendation';b.disabled=!s.permission.can_approve;b.onclick=()=>mutate('/approve',{command_id:r.command.command_id});box.append(b)}el('responses').append(box)}
+}catch(e){el('connection').textContent='Director unavailable. Essential mission progression remains local; this panel may be stale.';el('error').textContent=e.message}finally{busy=false}}
+async function mutate(suffix,body,method='POST'){try{await api('/v1/sessions/'+current+suffix,method,body);el('error').textContent='';await refresh()}catch(e){el('error').textContent=e.message}}
+window.addEventListener('hashchange',()=>{const incoming=new URLSearchParams(location.hash.slice(1)).get('token');if(incoming){token=incoming;sessionStorage.setItem('overlordOperator',token)}history.replaceState(null,'',location.pathname);refresh()});
+el('sessions').onchange=refresh;el('login').onclick=()=>{token=el('credential').value.trim();sessionStorage.setItem('overlordOperator',token);el('credential').value='';refresh()};
+el('apply').onclick=()=>{const m=el('selection').value;mutate('/control',{enabled:m==='review'||m==='auto',paused:control.paused||false,automatic:m!=='review',observation_only:m==='observe'},'PUT')};el('pause').onclick=()=>mutate('/control',{...control,paused:true},'PUT');el('resume').onclick=()=>mutate('/control',{...control,paused:false},'PUT');refresh();setInterval(refresh,3000);
+</script></html>

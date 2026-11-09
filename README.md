@@ -4,7 +4,7 @@
 
 OVERLORD aims to direct the cooperative Arma 3 experience through intent, pacing, communication and bounded operational interventions. Arma and existing tactical or campaign systems retain their simulation responsibilities. Future action proposals must respect faction knowledge and be validated by the authoritative game server.
 
-> **Status:** Pre-alpha local deterministic reserve response. Observation/downtime playtest confirmed; the new movement loop awaits Eden playtest. No LLM.
+> **Status:** Local deterministic Operation First Contact: briefing, recon, optional combat, extraction and factual debrief. Quiet recon and automatic-combat extraction are now confirmed in local Eden playtests. Observed runs took about 8 minutes; longer pacing and remaining failure-path tests are still open.
 
 ## First playable target
 
@@ -61,25 +61,33 @@ This project is being developed in the open; architecture and issue feedback are
 
 OVERLORD is an independent community project, not affiliated with Bohemia Interactive.
 
-## Local Arma reserve response demo
+## Play Operation First Contact
 
-Follow [Windows/Eden setup and exact playtest](docs/local-demo.md): attack the
-checkpoint, inspect a recommendation, enable execution explicitly, then trigger a
-fresh eligible attack. The preplaced reserve receives one movement order; its Arma
-acknowledgement is persisted. Retried command identities do not add orders.
+Follow [the Windows/Eden guide](docs/local-demo.md). Start the director with
+`tools\start-overlord.cmd` (Windows clone) or `./tools/start-overlord.sh` (WSL).
+Open its private operator-panel link, then load the matching mission in Eden.
+The panel shows the active session, mode and approval permission; no development
+task or console command is needed to enable execution or approve a fresh response.
+Recommendation-only remains the default.
 
-```sh
-python -m overlord.control --session SESSION_UUID status
-python -m overlord.control --session SESSION_UUID enable
-python -m overlord.control --session SESSION_UUID pause
-```
+Read the briefing, use **Begin reconnaissance patrol**, reach **recon_alpha**,
+observe the checkpoint and use **Report checkpoint reconnaissance**. Combat is
+optional. Return alive to **extraction_alpha** and choose **Extract and debrief**.
+The approximately 10–15 minute target includes a deliberate covered approach,
+observation and return; no timer forces contact. One-player local preview is the
+supported milestone; four-slot and dedicated-server acceptance remain open.
 
-Old proposals expire on mode changes; enabling never silently dispatches them.
-Pause prevents new dispatch, while an already-issued movement order continues.
-See [protocol/lifecycle and failure semantics](docs/architecture.md). Default
-cooldown is 15s (`OVERLORD_RESPONSE_COOLDOWN_SECONDS`). No inference is invoked.
-[Transport evidence](docs/transport-local.md) selects the local DLL fallback for
-2.22; HostHavoc and dedicated multiplayer remain subsequent milestones.
+The operator may select observation, recommendation, execution with manual review,
+or automatic bounded execution, and pause new dispatch. Mode changes expire old
+proposals; fresh evidence is required after enabling. Pause does not cancel an
+existing order. A surviving checkpoint guard's radio report is the narrow evidence
+for a reserve response; recon reporting alone never informs OPFOR.
+
+Essential tasks and a clearly labelled local debrief work during director downtime.
+The panel displays persisted evidence and actual acknowledgements, with no claim
+that assigning a movement order proves arrival. See [architecture](docs/architecture.md)
+and [verification](docs/verification.md). No inference, spawning commands or new
+gameplay command family was added.
 
 ## Local director quick start
 
@@ -127,7 +135,8 @@ curl http://127.0.0.1:8000/v1/sessions/SESSION_UUID/observations
 Interactive API documentation is at <http://127.0.0.1:8000/docs>. Configure database
 path, bind host/port and log level through `OVERLORD_*` variables or `.env` (see
 [example](.env.example)); actual environment variables take precedence. Keep `.env`
-untracked. This unauthenticated first slice is for trusted local development.
+untracked. Game transport is for a trusted local machine. Operator control mutations require
+the private launch credential; remote hosting remains unsupported.
 
 ### Development checks
 
@@ -143,10 +152,11 @@ Use feature branches and small issue-linked pull requests. Format changes with
 validation and pytest behavior tests. CI runs the same checks on Python 3.12.
 See [architecture and protocol](docs/architecture.md) for components, retry and
 ordering semantics, migrations, limitations and the local outbound-only game
-bridge. The current slice addresses #7 with partial groundwork for #2/#8/#9/#10;
-it does not implement their full decision, command or game integration criteria.
+bridge. The current slice adds local progression, authenticated operator controls and factual
+debrief to the response loop. Broad mission, intelligence and dedicated multiplayer
+acceptance criteria remain open.
 
-### Next useful increment
+### Subsequent milestones
 
 Produce a bounded, deterministic structured SITREP from recorded observations under
 [#6](https://github.com/instanceofjamie/overlord/issues/6), separating observed facts, inference and unknowns. SITREP formatting remains deferred until the playable connection is verified. Recommendation-only evaluation should precede live execution.
