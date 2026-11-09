@@ -7,7 +7,7 @@ OL_directorReport = ["No director report received. Recommendations and persisten
 OL_lastDirectorContact = -100;
 OL_fnc_progress = {
     params ["_milestone", "_caller"];
-    if (!isServer || {isNull _caller} || {!local _caller} || {!isPlayer _caller}) exitWith {};
+    if (!isServer || {isNull _caller} || {!local _caller} || {!(isPlayer [_caller])}) exitWith {};
     private _candidate = [OL_stage, _milestone] call OL_fnc_nextStage;
     if (_candidate == OL_stage) exitWith {};
     private _next = "";

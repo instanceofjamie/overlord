@@ -221,6 +221,8 @@ Local checks performed:
   restricted sandbox; an in-sandbox attempt could not complete threaded TestClient.
 - Ruff lint/format and strict mypy (13 modules); `git diff --check` passed.
 - SQF-VM v2026.04.03-ed9f5f5 parsed seven SQF files, mission.sqm and description.ext.
+  Final engine-API review changed the progression identity check to documented
+  corpse-aware `isPlayer [unit]` (available since 2.06) for death reporting.
   Executed the mission's actual pure `flow.sqf` function with seven assertions for
   recon-only completion, duplicates, invalid extraction, attack restraint and failure
   terminal states. This does not emulate Arma's action UI, tasks, locality or terrain.

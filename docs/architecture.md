@@ -10,6 +10,8 @@ the new executor still requires [live verification](local-demo.md).
 The local operation extends the bounded loop below. `flow.sqf` contains the pure
 transition function used by server progression; `operation.sqf` validates the player,
 life state, current phase and required marker distance before accepting an action.
+It uses the documented [corpse-aware isPlayer syntax](https://community.bistudio.com/wiki/isPlayer)
+for player identity so the death handler can report a terminal failure.
 `initPlayerLocal.sqf` creates three tasks once, updates their states once per phase,
 and adds the normal action-menu interactions and diary. No timer starts combat.
 
