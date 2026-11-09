@@ -91,8 +91,13 @@ the dedicated server held the same port on the Wi-Fi address. Separate port rang
 remove this observed overlap. After this change the operator reported the server
 appeared in Direct Connect. A complete A2S_INFO query on 2403 also passed. The
 mission registered session `9a23fa1a-5e94-4780-9bfd-6976833c3eb2`; server logs
-confirmed authoritative initialisation and recommendation-only mode. An actual
-player entering a scout slot and two-player play are not established by this evidence.
+confirmed authoritative initialisation and recommendation-only mode. The subsequent [live one-player dedicated run](evidence/2026-11-09-dedicated-player.json)
+completed briefing, recon report, attack and extraction (20:37–20:45). One bounded
+reserve command was approved by enabled rules, applied on the server and durably
+acknowledged as `movement_order_assigned`. A second attack report produced no action
+because the reserve was already committed. This establishes playable single-player
+on the dedicated server; two-player synchronisation and the remaining matrix still
+need live validation. Physical reserve arrival was not recorded.
 Use the printed port when overriding `-Port`. Do not use the game's usual 2302
 value with this launcher unless you explicitly selected it.
 
