@@ -3,9 +3,11 @@
 
 Supported target: **single-player Eden preview, vanilla Altis, Arma 3 x64 2.22**.
 One playable NATO scout, two checkpoint guards and one editor-placed OPFOR reserve.
-No extra mods, inference or spawning commands. The prior observation/response loop
-passed operator Eden playtests, including reported reserve arrival. The new route,
-actions, tasks, operator panel and debrief **still need the playtest below**.
+No extra mods, inference or spawning commands. Both quiet reconnaissance and automatic-combat runs now have successful local
+Eden extraction records. The combat run has an actual movement-order acknowledgement.
+Observed durations were about 8 minutes, below the 10–15 minute target. Detailed UI
+readability, duplicate replay, human order replacement and new-mission outage fallback
+remain to be tested; see [live evidence](verification.md#operator-confirmed-quiet-and-automatic-combat-completions).
 
 ## One-time installation / update
 

@@ -4,7 +4,7 @@
 
 OVERLORD aims to direct the cooperative Arma 3 experience through intent, pacing, communication and bounded operational interventions. Arma and existing tactical or campaign systems retain their simulation responsibilities. Future action proposals must respect faction knowledge and be validated by the authoritative game server.
 
-> **Status:** Local deterministic Operation First Contact: briefing, recon, optional combat, extraction and factual debrief. Prior transport/reserve playtests passed; the new playable flow awaits Eden testing.
+> **Status:** Local deterministic Operation First Contact: briefing, recon, optional combat, extraction and factual debrief. Quiet recon and automatic-combat extraction are now confirmed in local Eden playtests. Observed runs took about 8 minutes; longer pacing and remaining failure-path tests are still open.
 
 ## First playable target
 
