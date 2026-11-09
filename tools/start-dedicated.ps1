@@ -54,6 +54,9 @@ $Text = $Text.Replace('@JOIN_PASSWORD@',$JoinPassword).Replace('@ADMIN_PASSWORD@
 $Config = Join-Path $Runtime 'server.cfg'
 [IO.File]::WriteAllText($Config,$Text)
 Write-Host "Server: $BindAddress`:$Port"
+if ($BindAddress -eq '127.0.0.1') {
+    Write-Warning 'Loopback mode is for isolated headless probes; player discovery/connectivity is not verified. Use -BindAddress with your private LAN IPv4 address for playtests.'
+}
 Write-Host "Private join password: $JoinPassword"
 Write-Host "Private game-admin login: #login $AdminPassword"
 Write-Host 'Director approval is separate: use the private operator panel printed by start-overlord.'

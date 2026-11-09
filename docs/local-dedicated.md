@@ -34,7 +34,8 @@ scope: no router changes, UPnP, public HTTP or firewall changes are performed.
 
    ```powershell
    powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\start-dedicated.ps1 `
-     -ArmaPath 'D:\Games\Steam\steamapps\common\Arma 3'
+     -ArmaPath 'D:\Games\Steam\steamapps\common\Arma 3' `
+     -BindAddress 'YOUR-SERVER-LAN-IP'
    ```
 
    The launcher reuses the installed DLL (or accepts `-DllPath`), installs only the
@@ -54,13 +55,30 @@ scope: no router changes, UPnP, public HTTP or firewall changes are performed.
    `-autoInit`). Expect one `OVERLORD SESSION`, `dedicated=true; reserve local=true;
    reserve owner=2; slots=4`, and confirmed registration/mission-start delivery.
    Zero connected players is correctly recorded as zero, not an invented player.
-5. Client: Multiplayer → Server Browser → Direct Connect → `127.0.0.1`, port `2302`,
+5. Client: Multiplayer → Server Browser → Direct Connect → your server’s private
+   LAN IPv4 address (including on the server PC), port `2302`,
    use the **join** password, select a NATO scout slot and continue. A second player
-   selects a different slot. No `-mod=@OVERLORD` is required on clients.
+   selects a different slot. No `-mod=@OVERLORD` is required on clients. Launch
+   vanilla explicitly with `-mod=` when starting the client executable directly:
+   omitting it can restore saved third-party mods despite using a vanilla server.
 
-Default binding/`loopback=1` is **same-machine testing only**. For a second physical
-PC on your private LAN, start instead with `-BindAddress 'YOUR-SERVER-LAN-IP'`; only
-private IPv4 addresses are accepted and loopback-only mode is disabled in that case.
+Use the private LAN binding above for the playable setup. Find the server PC’s Wi-Fi
+or Ethernet IPv4 address with `Get-NetIPAddress -AddressFamily IPv4`; avoid adapters
+with `169.254.*` addresses. The launcher accepts private IPv4 addresses and disables
+loopback-only mode for that binding.
+
+The launcher’s default `127.0.0.1`/`loopback=1` remains an isolated headless-probe
+option, **not a verified player-connect setup**. During the 9 November interactive
+handoff it had no Steam query socket on 2303 and did not answer discovery queries.
+Restarting just the owned dedicated server on the private Wi-Fi address with
+`loopback=0` created the 2303 socket and returned an A2S challenge (response type 65).
+The mission registered a fresh session and remained recommendation-only. This proves
+query reachability on the server PC; a subsequent complete A2S_INFO handshake
+returned `OVERLORD local dedicated`, map `Altis`, game `Operation First Contact`.
+Player joins and two-player play remain pending.
+The LAN browser being empty alone does not establish whether game traffic works;
+use Direct Connect and check the server log for a player joining.
+
 The friend connects to that LAN address, not their own `127.0.0.1`. Do not expose the
 Python director: its loopback endpoint remains on the server PC. No router mapping
 is needed. If a demonstrated LAN connection failure is due to Windows Firewall,
