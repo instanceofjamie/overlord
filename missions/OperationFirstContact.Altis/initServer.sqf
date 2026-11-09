@@ -10,6 +10,7 @@ OL_reserveGroup = group (missionNamespace getVariable ["overlord_reserve_leader"
 OL_reserveGroup setVariable ["OL_owned", true];
 {_x disableAI "PATH"} forEach units OL_reserveGroup;
 OL_outbox = [];
+call compile preprocessFileLineNumbers "network.sqf";
 call compile preprocessFileLineNumbers "operation.sqf";
 OL_sessionBody = format ["{""session_id"":""%1"",""mission_name"":""Operation First Contact"",""map_name"":""Altis""}", OL_session];
 OL_outbox pushBack [OL_session, "session", OL_sessionBody, "session"];
@@ -55,10 +56,49 @@ private _cover = createVehicle ["Land_HBarrier_3_F", [13900,15705,0], [], 0, "CA
 _cover setPosATL [13900,15705,0];
 [] spawn {
     waitUntil {sleep 0.1; time > 0};
-    private _count = (count allPlayers) max 1;
+    private _count = count (call OL_fnc_activeScouts);
     ["mission_started", format ["{""player_count"":%1}", _count min 256]] call OL_fnc_observe;
     [] execVM "transport.sqf";
 };
 
 private _reconCover = createVehicle ["Land_HBarrier_3_F", [14280,15985,0], [], 0, "CAN_COLLIDE"];
 _reconCover setPosATL [14280,15985,0];
+
+[format ["AUTHORITY dedicated=%1; reserve local=%2; reserve owner=%3; slots=4", isDedicated, local OL_reserveGroup, groupOwner OL_reserveGroup]] call OL_fnc_status;
+call OL_fnc_publish;
+// EntityKilled runs on the authoritative server even though player units are client-local.
+addMissionEventHandler ["EntityKilled", {
+    params ["_unit"];
+    if (([_unit] call OL_fnc_participant) && {isPlayer [_unit]} && {!(_unit getVariable ["OL_parked", false])}) then {
+        OL_localFacts pushBack ("A scout was killed at " + call OL_fnc_timestamp);
+        ["operator_killed", _unit] call OL_fnc_progress;
+        call OL_fnc_publish;
+    };
+}];
+
+// Keep disconnected bodies/slots available; a disconnect is not a team death or reset.
+addMissionEventHandler ["HandleDisconnect", {
+    params ["_unit"];
+    if ([_unit] call OL_fnc_participant) then {[_unit] call OL_fnc_parkSlot; true} else {false}
+}];
+[] spawn {
+    while {true} do {
+        private _active = call OL_fnc_activeScouts;
+        {
+            private _unit = missionNamespace getVariable [_x, objNull];
+            if (!isNull _unit && {alive _unit}) then {
+                if (_unit in _active) then {
+                    if (_unit getVariable ["OL_parked", false]) then {
+                        _unit hideObjectGlobal false;
+                        _unit enableSimulationGlobal true;
+                        if (local _unit) then {_unit allowDamage true; _unit enableAI "ALL"};
+                        _unit setVariable ["OL_parked", false];
+                    };
+                } else {
+                    if !(_unit getVariable ["OL_parked", false]) then {[_unit] call OL_fnc_parkSlot};
+                };
+            };
+        } forEach OL_slotNames;
+        sleep 0.5;
+    };
+};

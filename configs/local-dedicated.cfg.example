@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: Apache-2.0
+// Template only. tools/start-dedicated.ps1 generates ignored private credentials.
+hostname = "OVERLORD local dedicated";
+password = "@JOIN_PASSWORD@";
+passwordAdmin = "@ADMIN_PASSWORD@";
+maxPlayers = 4;
+persistent = 1;
+loopback = @LOOPBACK@;
+upnp = 0;
+BattlEye = 0;
+verifySignatures = 0;
+allowedFilePatching = 0;
+kickDuplicate = 1;
+voteMissionPlayers = 99;
+voteThreshold = 1;
+class Missions
+{
+    class FirstContact
+    {
+        template = "OperationFirstContact.Altis";
+        difficulty = "Regular";
+    };
+};

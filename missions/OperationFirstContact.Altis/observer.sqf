@@ -52,7 +52,7 @@ OL_fnc_observe = {
 };
 OL_fnc_checkpointHit = {
     params ["_unit", "_instigator"];
-    if (!isServer || {!local _unit} || {diag_tickTime - OL_lastCheckpointReport < 3}) exitWith {};
+    if !([isServer, local _unit, diag_tickTime, OL_lastCheckpointReport, OL_stage] call OL_fnc_attackPolicy) exitWith {};
     // Throttle synchronously before scheduling/network; fresh attacks can follow operator enable.
     if (OL_stage in ["succeeded", "failed"]) exitWith {};
     if (!OL_checkpointReported) then {

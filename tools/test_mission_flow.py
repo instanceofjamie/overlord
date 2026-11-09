@@ -13,8 +13,10 @@ def main() -> None:
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     flow = (root / "missions/OperationFirstContact.Altis/flow.sqf").read_text()
+    policy = (root / "missions/OperationFirstContact.Altis/policy.sqf").read_text()
     script = (
-        flow
+        policy
+        + flow
         + """
 private _stage = "briefing";
 {_stage = [_stage, _x] call OL_fnc_nextStage} forEach [
@@ -26,6 +28,33 @@ assert ((["recon", "checkpoint_attacked"] call OL_fnc_nextStage) == "recon");
 assert ((["recon", "aborted"] call OL_fnc_nextStage) == "failed");
 assert ((["extraction", "operator_killed"] call OL_fnc_nextStage) == "failed");
 assert ((["failed", "extracted"] call OL_fnc_nextStage) == "failed");
+assert ([true,true,true,"current","current",3,3,true,false,false,true] call OL_fnc_rpcPolicy);
+assert (!([true,true,true,"current","current",4,3,true,false,false,true] call OL_fnc_rpcPolicy));
+assert (!([true,true,true,"current","old",3,3,true,false,false,true] call OL_fnc_rpcPolicy));
+assert (!([true,true,true,"current","current",3,3,true,true,false,true] call OL_fnc_rpcPolicy));
+assert (!([true,true,true,"current","current",0,3,true,false,false,true] call OL_fnc_rpcPolicy));
+assert (!([true,false,true,"current","current",3,3,true,false,false,true] call OL_fnc_rpcPolicy));
+assert ([true,true,true,"current","current",0,2,false,false,true,false] call OL_fnc_rpcPolicy);
+assert (!([true,true,true,"current","current",0,2,false,false,true,true] call OL_fnc_rpcPolicy));
+assert ([true,true,false,2] call OL_fnc_adminPolicy);
+assert (!([true,true,false,1] call OL_fnc_adminPolicy));
+assert (!([true,true,false,0] call OL_fnc_adminPolicy));
+assert ([false,false,true,0] call OL_fnc_adminPolicy);
+assert (!(["extracted",true,true,2,false] call OL_fnc_teamPolicy));
+assert (["extracted",true,true,2,true] call OL_fnc_teamPolicy);
+assert (!(["operator_killed",false,false,1,false] call OL_fnc_teamPolicy));
+assert (["operator_killed",false,false,0,false] call OL_fnc_teamPolicy);
+assert ((["extraction",["briefing_complete","recon_reported"]] call OL_fnc_taskStates)
+    isEqualTo ["Succeeded","Succeeded","Assigned"]);
+assert ((["succeeded",[]] call OL_fnc_taskStates)
+    isEqualTo ["Succeeded","Succeeded","Succeeded"]);
+assert ((["failed",["briefing_complete","recon_reported"]] call OL_fnc_taskStates)
+    isEqualTo ["Succeeded","Succeeded","Failed"]);
+assert ([true,true,10,7,"recon"] call OL_fnc_attackPolicy);
+assert (!([true,true,10,10,"recon"] call OL_fnc_attackPolicy));
+assert (!([false,true,10,7,"recon"] call OL_fnc_attackPolicy));
+assert (!([true,false,10,7,"recon"] call OL_fnc_attackPolicy));
+assert (!([true,true,10,7,"succeeded"] call OL_fnc_attackPolicy));
 diag_log "OVERLORD flow regression passed";
 """
     )
@@ -45,7 +74,7 @@ diag_log "OVERLORD flow regression passed";
             or "OVERLORD flow regression passed" not in result.stdout
         ):
             raise RuntimeError(result.stdout + result.stderr)
-        print("SQF runtime flow regression passed (7 assertions)")
+        print("SQF runtime flow/MP policy regression passed (31 assertions)")
 
 
 if __name__ == "__main__":

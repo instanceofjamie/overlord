@@ -1,0 +1,165 @@
+{
+  "scope": "Real dedicated engine; synthetic attack telemetry; no player clients connected",
+  "tests": [
+    {
+      "name": "dedicated mission initialised without clients",
+      "passed": true
+    },
+    {
+      "name": "director initially offline; server retains events",
+      "passed": true
+    },
+    {
+      "name": "owned director started",
+      "passed": true
+    },
+    {
+      "name": "startup event delivered after reconnect",
+      "passed": true
+    },
+    {
+      "name": "real server-local movement order applied",
+      "passed": true
+    },
+    {
+      "name": "owned director started",
+      "passed": true
+    },
+    {
+      "name": "actual ack retained through director restart",
+      "passed": true
+    },
+    {
+      "name": "forced duplicate delivery returns cached result",
+      "passed": true
+    },
+    {
+      "name": "server restart creates a new mission session",
+      "passed": true
+    },
+    {
+      "name": "new session registers independently",
+      "passed": true
+    },
+    {
+      "name": "previous-session command rejected by real engine",
+      "passed": true
+    }
+  ],
+  "sessions": [
+    {
+      "session_id": "a8304ea7-30dd-41da-9df7-7adcd339d7b9",
+      "observations": [
+        {
+          "protocol_version": "1.0",
+          "session_id": "a8304ea7-30dd-41da-9df7-7adcd339d7b9",
+          "event_id": "66da30a5-d370-4e01-b612-df9ded778f2c",
+          "timestamp": "2026-11-09T18:43:54Z",
+          "event_type": "mission_started",
+          "payload": {
+            "player_count": 0
+          }
+        },
+        {
+          "protocol_version": "1.0",
+          "session_id": "a8304ea7-30dd-41da-9df7-7adcd339d7b9",
+          "event_id": "597089b4-04ae-40f3-bad4-c248e6d72509",
+          "timestamp": "2026-11-09T18:44:00.095321Z",
+          "event_type": "checkpoint_attacked",
+          "payload": {
+            "checkpoint_id": "checkpoint_alpha",
+            "attacking_side": "BLUFOR",
+            "report_channel": "guard_radio",
+            "reserve_available": true
+          }
+        }
+      ],
+      "responses": [
+        {
+          "event_id": "597089b4-04ae-40f3-bad4-c248e6d72509",
+          "session_id": "a8304ea7-30dd-41da-9df7-7adcd339d7b9",
+          "state": "executed",
+          "reason": "Guard radio reports checkpoint harm; configured reserve response",
+          "created_at": "2026-11-09T18:44:00.105691+00:00",
+          "command": {
+            "protocol_version": "1.0",
+            "session_id": "a8304ea7-30dd-41da-9df7-7adcd339d7b9",
+            "command_id": "2f94cba5-5844-5fda-a2ad-9769e08854fd",
+            "idempotency_key": "2f94cba5-5844-5fda-a2ad-9769e08854fd",
+            "triggering_event": "597089b4-04ae-40f3-bad4-c248e6d72509",
+            "action": "dispatch_reserve",
+            "asset": "reserve_alpha",
+            "location": "response_alpha",
+            "expires_at": "2026-11-09T18:46:00Z"
+          },
+          "committed": true,
+          "acknowledgement": {
+            "protocol_version": "1.0",
+            "session_id": "a8304ea7-30dd-41da-9df7-7adcd339d7b9",
+            "command_id": "2f94cba5-5844-5fda-a2ad-9769e08854fd",
+            "idempotency_key": "2f94cba5-5844-5fda-a2ad-9769e08854fd",
+            "status": "executed",
+            "result": "movement_order_assigned"
+          },
+          "approved_at": "2026-11-09T18:44:00.105691+00:00",
+          "approval_kind": "enabled_rule",
+          "issued_at": "2026-11-09T18:44:00.126184+00:00",
+          "ack_received_at": "2026-11-09T18:44:07.402947+00:00"
+        }
+      ],
+      "rpt_lines": [
+        "18:43:54 \"OVERLORD SESSION a8304ea7-30dd-41da-9df7-7adcd339d7b9; productVersion [\"\"Arma 3\"\",\"\"Arma3\"\",222,154089,\"\"Stable\"\",true,\"\"Windows\"\",\"\"x64\"\",\"\"\"\"]; transport async x64 DLL\"",
+        "18:43:54 \"OVERLORD AUTHORITY dedicated=true; reserve local=true; reserve owner=2; slots=4\"",
+        "18:43:54 \"OVERLORD DETECTED mission_started (event 66da30a5-d370-4e01-b612-df9ded778f2c)\"",
+        "18:43:56 \"OVERLORD DIRECTOR UNAVAILABLE / delivery unconfirmed (HTTP 0). Retrying retained IDs.\"",
+        "18:44:00 \"OVERLORD DELIVERY CONFIRMED session (a8304ea7-30dd-41da-9df7-7adcd339d7b9), session a8304ea7-30dd-41da-9df7-7adcd339d7b9\"",
+        "18:44:00 \"OVERLORD DELIVERY CONFIRMED mission_started (66da30a5-d370-4e01-b612-df9ded778f2c), session a8304ea7-30dd-41da-9df7-7adcd339d7b9\"",
+        "18:44:01 \"OVERLORD RESPONSE no_action; execution enabled=true paused=false (local veto=false)\"",
+        "18:44:03 \"OVERLORD RESPONSE issued; execution enabled=true paused=false (local veto=false)\"",
+        "18:44:03 \"OVERLORD ORDER APPLIED 2f94cba5-5844-5fda-a2ad-9769e08854fd; waypoint count=2\"",
+        "18:44:03 \"OVERLORD RESERVE executed: movement_order_assigned (2f94cba5-5844-5fda-a2ad-9769e08854fd)\"",
+        "18:44:03 \"OVERLORD DIRECTOR UNAVAILABLE / delivery unconfirmed (HTTP 503). Retrying retained IDs.\"",
+        "18:44:08 \"OVERLORD DELIVERY CONFIRMED reserve acknowledgement (2f94cba5-5844-5fda-a2ad-9769e08854fd), session a8304ea7-30dd-41da-9df7-7adcd339d7b9\"",
+        "18:44:08 \"OVERLORD CACHED RESULT 2f94cba5-5844-5fda-a2ad-9769e08854fd; waypoint count=2\"",
+        "18:44:08 \"OVERLORD RESERVE executed: movement_order_assigned (2f94cba5-5844-5fda-a2ad-9769e08854fd)\""
+      ]
+    },
+    {
+      "session_id": "35729576-4571-42d9-8065-e9b027d2191f",
+      "observations": [
+        {
+          "protocol_version": "1.0",
+          "session_id": "35729576-4571-42d9-8065-e9b027d2191f",
+          "event_id": "2cc39f0c-de36-4759-a1c2-5aec36ae3860",
+          "timestamp": "2026-11-09T18:44:25Z",
+          "event_type": "mission_started",
+          "payload": {
+            "player_count": 0
+          }
+        }
+      ],
+      "rpt_lines": [
+        "18:44:25 \"OVERLORD SESSION 35729576-4571-42d9-8065-e9b027d2191f; productVersion [\"\"Arma 3\"\",\"\"Arma3\"\",222,154089,\"\"Stable\"\",true,\"\"Windows\"\",\"\"x64\"\",\"\"\"\"]; transport async x64 DLL\"",
+        "18:44:25 \"OVERLORD AUTHORITY dedicated=true; reserve local=true; reserve owner=2; slots=4\"",
+        "18:44:25 \"OVERLORD DETECTED mission_started (event 2cc39f0c-de36-4759-a1c2-5aec36ae3860)\"",
+        "18:44:26 \"OVERLORD DELIVERY CONFIRMED session (35729576-4571-42d9-8065-e9b027d2191f), session 35729576-4571-42d9-8065-e9b027d2191f\"",
+        "18:44:26 \"OVERLORD DELIVERY CONFIRMED mission_started (2cc39f0c-de36-4759-a1c2-5aec36ae3860), session 35729576-4571-42d9-8065-e9b027d2191f\"",
+        "18:44:27 \"OVERLORD IGNORED PACKET: wrong mission/session\""
+      ]
+    }
+  ],
+  "source_sha256": {
+    "operation.sqf": "240a483e2ad34b15f72e10b043498f4c308193ba54c48219d28aeb8e13d7c714",
+    "initPlayerLocal.sqf": "4b4528300a7e80b743875c67c9087e7c5ff93d291bae737b7156881cf09f02f2",
+    "mission.sqm": "8fe6dc7b98045909adba878cb3c518e334c78231b60ea56f6253b9d91c6323cf",
+    "executor.sqf": "21c561ecde425e2782d8f0f4f544df7c6f2d13cdf1db847f3883e0fca1dd1868",
+    "transport.sqf": "2a2ce423413022ee308b6ab9236521f60adaa7d301789c17b518d9aff96e8c0d",
+    "flow.sqf": "49b69be6d7729b8a19c98b1d089606882f68ce42742be574b95ff494e0e05233",
+    "policy.sqf": "c134c3775a2ec616c5068ae1329ed95994de95c03210f00689bfab93ee78f9d5",
+    "description.ext": "29bd2ff9279baeb65b7dea0273c86d6ac80db4231f947c4cb3b2b2f32092c2b5",
+    "network.sqf": "9876d28bd911ae7eb56d73e2e348e42777625fad8f3c6db29f70f74d34dceda1",
+    "initServer.sqf": "25ae3cfd974b2656cf9cdb298e7c5abd48bfd6db29ab9cbc60b9f4168d9e68b3",
+    "observer.sqf": "898f8ec468deacf78a26c1e10730c3b9b3dbb6ba516d63c5fdcba2c35643e904"
+  },
+  "result": "passed"
+}

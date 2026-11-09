@@ -1,8 +1,10 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Operation First Contact — local playable operation
 
-Supported target: **single-player Eden preview, vanilla Altis, Arma 3 x64 2.22**.
-One playable NATO scout, two checkpoint guards and one editor-placed OPFOR reserve.
+The earlier Eden playtests below used vanilla Altis, Arma 3 x64 2.22. For the current
+local dedicated branch use [the multiplayer setup and matrix](local-dedicated.md);
+Eden remains supported.
+Four playable NATO scout slots (unused slots parked), two checkpoint guards and one editor-placed OPFOR reserve.
 No extra mods, inference or spawning commands. Both quiet reconnaissance and automatic-combat runs now have successful local
 Eden extraction records. The combat run has an actual movement-order acknowledgement.
 Observed durations were about 8 minutes, below the 10–15 minute target. Detailed UI

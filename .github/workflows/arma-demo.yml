@@ -22,14 +22,16 @@ jobs:
       - run: ctest --test-dir build/windows -C Release --output-on-failure
       - run: python tools/test_bridge.py build/windows/Release
       - run: ./tools/test_install.ps1 -DllPath build/windows/Release/overlord_bridge_x64.dll
+      - run: ./tools/test_dedicated_setup.ps1 -DllPath build/windows/Release/overlord_bridge_x64.dll
       - name: Package demo
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force build/demo/@OVERLORD,build/demo/tools,build/demo/docs | Out-Null
+          New-Item -ItemType Directory -Force build/demo/@OVERLORD,build/demo/tools,build/demo/docs,build/demo/configs | Out-Null
           Copy-Item build/windows/Release/overlord_bridge_x64.dll build/demo/@OVERLORD/
           Copy-Item missions build/demo/ -Recurse
-          Copy-Item tools/install-demo.ps1,tools/start-overlord.ps1,tools/start-overlord.cmd build/demo/tools/
-          Copy-Item docs/local-demo.md,docs/transport-local.md,docs/architecture.md,docs/verification.md build/demo/docs/
+          Copy-Item tools/install-demo.ps1,tools/start-overlord.ps1,tools/start-overlord.cmd,tools/start-dedicated.ps1 build/demo/tools/
+          Copy-Item configs/local-dedicated.cfg.example build/demo/configs/
+          Copy-Item docs/local-demo.md,docs/transport-local.md,docs/architecture.md,docs/verification.md,docs/local-dedicated.md build/demo/docs/
           Copy-Item LICENSE build/demo/
           Get-FileHash build/demo/@OVERLORD/overlord_bridge_x64.dll | Format-List | Out-File build/demo/SHA256.txt
       - uses: actions/upload-artifact@v4

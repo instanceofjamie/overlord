@@ -34,8 +34,14 @@ OL_fnc_receiveCommand = {
     params ["_packet"];
     if (!isServer || {!(_packet isEqualType [])} || {!(count _packet in [6,7])}) exitWith {};
     _packet params ["_version", "_session", "_enabled", "_paused", "_command", "_status"];
-    if (_version != "1.0" || {_session != OL_session} || {!(_enabled isEqualType true)} || {!(_paused isEqualType true)} || {!(_status isEqualType "")} || {!(_command isEqualType [])}) exitWith {};
-    OL_lastDirectorContact = diag_tickTime;
+    if (_session != OL_session) exitWith {
+        if (_session != (missionNamespace getVariable ["OL_lastIgnoredSession", ""])) then {
+            OL_lastIgnoredSession = _session;
+            diag_log "OVERLORD IGNORED PACKET: wrong mission/session";
+        };
+    };
+    if (_version != "1.0" || {!(_enabled isEqualType true)} || {!(_paused isEqualType true)} || {!(_status isEqualType "")} || {!(_command isEqualType [])}) exitWith {};
+    OL_lastDirectorContact = serverTime;
     if (count _packet == 7 && {(_packet select 6) isEqualType []}) then {OL_directorReport = _packet select 6};
     OL_executionEnabled = _enabled;
     OL_directorPaused = _paused;
@@ -48,6 +54,7 @@ OL_fnc_receiveCommand = {
     if !(([_id] call OL_fnc_commandIdentity) && {[_key] call OL_fnc_commandIdentity}) exitWith {["INVALID COMMAND ID"] call OL_fnc_status};
     private _old = OL_processed getOrDefault [_id, []];
     if (count _old > 0) exitWith {
+        diag_log format ["OVERLORD CACHED RESULT %1; waypoint count=%2", _id, count waypoints OL_reserveGroup];
         if ((_old select 0) == _key) then {[_id, _key, _old select 1, _old select 2] call OL_fnc_ackCommand};
     };
     private _result = "";
@@ -83,6 +90,7 @@ OL_fnc_receiveCommand = {
             _waypoint setWaypointSpeed "NORMAL";
             _group setCurrentWaypoint _waypoint;
             _state = "executed"; _result = "movement_order_assigned";
+            diag_log format ["OVERLORD ORDER APPLIED %1; waypoint count=%2", _id, count waypoints _group];
         } else {_state = "failed"; _result = "assignment_failed"};
     };
     [_id, _key, _state, _result] call OL_fnc_ackCommand;

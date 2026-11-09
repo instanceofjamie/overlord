@@ -1,6 +1,9 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Local bounded response architecture
 
+Current dedicated-server authority and remaining two-client checks are documented
+in [the dedicated guide](local-dedicated.md) and the dated repair section below.
+
 This milestone implements part of #2/#5/#8/#9/#10/#13. It stops at one deterministic
 reserve response. The prior observation path passed an operator Eden/outage playtest;
 the new executor still requires [live verification](local-demo.md).
@@ -288,3 +291,48 @@ Transactions make concurrent retries safe. Events are append-only through the AP
 order, with limit 1–100 and nonnegative offset. Delayed or out-of-order events are
 accepted as reported observations; timestamps do not reorder receipts or establish faction knowledge. The bounded
 response rule rejects stale/future and pre-enable evidence. A checkpoint event need not wait for mission_started delivery.
+
+## Local dedicated authority/synchronisation repair — 2026-11-09
+
+The single-player-only action/locality assumptions above are superseded by this
+focused multiplayer boundary. See [dedicated setup and matrix](local-dedicated.md).
+The mission design, HTTP operator authentication, deterministic rules and only
+`dispatch_reserve` director action remain unchanged.
+
+- `initServer.sqf` still initialises once. It defines the server RPC handlers and
+  pure policies, owns the bridge/session/outbox/guard event handlers, and observes
+  player death with server `EntityKilled`. `initPlayerLocal` never creates sessions
+  or uses the DLL. `HandleDisconnect` retains/parks a body without resetting progress.
+- Clients request only four named progress milestones. The two allowlisted RPCs
+  target the server, cannot be replayed through JIP, and validate actual
+  `remoteExecutedOwner` against the supplied configured scout object's `owner`,
+  current session and player identity. Caller claims are not identity. Internal
+  server death observation never trusts a client-supplied death report. Alive
+  progress still checks phase, position and team extraction requirements on server.
+- Logged-in server admins (role 2), not voted admins or arbitrary players, may
+  relinquish reserve ownership/veto new dispatch, or explicitly replace movement
+  with HOLD at the reserve's current location. The fixed human controls accept no
+  supplied coordinate/code. They neither approve a director response nor manufacture
+  a command ack. Director approval/pause remain in the authenticated web interface.
+- `OL_snapshot` is a server-published JIP-compatible array: session, stage, completed
+  milestones, server facts, last director report, last director contact in synchronised
+  `serverTime`, real executor-result summaries, and local veto. Clients reconstruct
+  each of three local tasks completely from it, including late terminal joins, rather
+  than assuming a briefing→recon sequence will happen after they connect.
+- Client status history is seeded on join; one current-stage summary replaces old
+  radio replay. Task states update only when their computed vector changes. New
+  progression broadcasts once; HTTP/network waits stay on the existing DLL worker.
+  A live server snapshot remains available when the director goes offline, with its
+  stale report/persistence explicitly marked in the shared local fallback AAR.
+- All living connected scouts must be home to extract/abort; a disconnected or dead
+  scout does not block survivors. The last connected scout dying fails the team.
+  Single-player remains one-scout behaviour. Empty/disconnected slots are retained
+  for JIP, parked rather than acting as new AI squad members, and unparked on occupancy.
+
+These use documented [public/JIP variables](https://community.bistudio.com/wiki/publicVariable),
+[setVariable](https://community.bistudio.com/wiki/setVariable),
+[remote execution allowlists](https://community.bistudio.com/wiki/CfgRemoteExec) and
+[server mission event handlers](https://community.bistudio.com/wiki/Arma_3:_Mission_Event_Handlers).
+Pure executable policy regressions and real headless engine evidence are distinct
+from the still-pending two-client network/UI/ownership tests. This is a trusted local
+Arma host, not a new remote authentication, anti-cheat or production hosting design.

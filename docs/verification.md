@@ -312,3 +312,99 @@ mission outage/local-debrief recovery, actual human order replacement without
 reapplication, detailed task/radio/AAR readability feedback and longer pacing.
 Four slots, dedicated multiplayer and HostHavoc remain subsequent milestones. These
 successful local completions do not close the broad roadmap acceptance criteria.
+
+## Local dedicated multiplayer repair — 2026-11-09
+
+Dependency checked first: PR #30 merged at 17:55:12 UTC as `2dcbc4e`. New branch
+`feat/local-dedicated-multiplayer` starts there. Read repository guidance, current
+mission/controls/bridge, merged PRs and issues #4/#5/#12/#13/#17. No applicable
+AGENTS.md was present. Existing unrelated `.vscode` files were left out of changes.
+
+Environment: existing Windows game install at `D:\Games\Steam\steamapps\common\Arma 3`,
+client plus `arma3server_x64.exe` FileVersion 2.22 / ProductVersion 2.22.0.154089,
+vanilla Altis and the previously tested DLL. Python 3.12 in WSL Ubuntu; local WinHTTP
+port 8000. No server package/tool download, router or firewall changes were needed.
+Only the pinned small SQF checker/browser test dependencies are development tooling.
+
+Inspection demonstrated blockers before any two-client claim: action visibility
+required `isServer`; progress rejected nonlocal client units; server initial variables
+and AAR were not shared; clients assumed they would see every intermediate task phase;
+client/server tick clocks were compared as if identical; there was only one playable
+slot. Also, `disabledAI=1` plus no respawn prevents JIP into vacant slots. Repairs and
+strict owner/session/admin checks are described in `docs/local-dedicated.md`.
+
+The initial engine probe did not initialise the mission with Windows profiles/config
+on a WSL UNC share; RPT showed repeated cache-open error 12. Native Windows AppData
+profiles/config fixed the startup. The launcher now rejects UNC runtime paths.
+A first config used an out-of-range vote threshold and produced warnings; corrected
+to 1, with the final probe no longer reporting those warnings. No addon/server package
+was installed to mask a configuration failure. Unpacked MP mission loading worked.
+
+### Automated checks
+
+- Existing Python suite: **49 passed**; existing Starlette/HTTPX warning remains.
+- Ruff lint/format, strict mypy (13 application modules), `git diff --check`.
+- SQF-VM syntax: nine SQF scripts plus mission.sqm and description.ext. Actual pure
+  runtime functions execute **31 assertions**: existing progression, wrong owner,
+  unknown participant, old session, JIP replay, HC/zero sender, direct-host versus
+  dedicated context, logged-in versus voted/nonadmin, shared extraction/last-scout
+  death, JIP terminal task reconstruction and overlapping-hit throttle.
+- Windows PowerShell dedicated-setup regression passed against a disposable fake
+  game/runtime: mission copy hashes, distinct generated private credentials, no
+  process launch under PrepareOnly and public/wildcard binding rejection. Existing
+  installer regression also remains in Windows CI. No secrets/configs committed.
+- Native queue CTest, existing Windows installer copy/refusal and isolated Chromium
+  browser regressions passed locally. Direct Windows DLL/API and all these checks
+  remain in CI. The optional engine probe cannot run in hosted CI without the installed game assets.
+
+### Live dedicated-engine checks (no player clients)
+
+`tools/test_live_dedicated.py` ran the installed **real** server, not SQF-VM. It uses
+its own private temporary director database and explicit synthetic attack observation,
+not a human projectile. It starts/stops only the server PIDs and Python service it
+created; no WSL shutdown or existing client/director/server termination occurs.
+
+Final sanitised evidence, source hashes and selected real RPT lines are preserved in
+[evidence/2026-11-09-dedicated-headless.json](evidence/2026-11-09-dedicated-headless.json).
+Private passwords, launch transcripts, full RPT files and databases remain outside
+source control in the native AppData runtime directory.
+
+The real probe verified:
+
+1. One server session/mission-start event with **zero clients**, DLL loading and
+   `dedicated=true; reserve local=true; reserve owner=2; slots=4`.
+2. Director initially absent: retained IDs delivered after its start, while the
+   dedicated engine and asynchronous transport continued. This is not proof of
+   playable client progression during downtime; no clients were connected.
+3. An unauthorised HTTP enable request returned 403. A private credential enabled
+   the synthetic fresh attack; the actual server applied the existing MOVE command
+   to its server-local reserve and logged waypoint count 2.
+4. Ack POSTs deliberately returned 503, leaving the durable command issued with no
+   ack. The owned director stopped/restarted with the same DB; the retained actual
+   Arma acknowledgement resolved to executed/movement_order_assigned.
+5. Forced delivery of the same packet produced CACHED RESULT with waypoint count 2,
+   while ORDER APPLIED occurred once. This is concrete duplicate evidence for this
+   run, not an exactly-once guarantee across crashes/saved-game rollbacks.
+6. A fresh server process produced a new mission UUID/default recommendation mode;
+   injecting the old packet logged wrong-session rejection and applied no order.
+   An in-process admin `#restart` with the DLL retained still needs the client test.
+
+There were no SQF expression/undefined-variable errors in the successful headless
+probe. Vanilla animation/cache/asset diagnostic messages are not a promise of a
+warning-free engine log. Arrival is untracked; an actual order ack is not arrival.
+
+### Still awaiting human testing
+
+**No two-player completion, player RPC exchange, actual projectile report, JIP or
+reconnect, shared task/radio/AAR presentation, actual client-admin HOLD override, or
+Eden regression has been performed on this branch.** These are explicit pending
+rows in the concise multiplayer matrix, not passes inferred from headless tests.
+New pure predicates test the actual boundary logic, not engine networking itself.
+Normal web approval/authentication remains tested; multi-client permissions must
+also be exercised normally without weakening checks.
+
+The branch is prepared for the operator and a second player to execute the short
+handoff in `docs/local-dedicated.md`. Pacing/mission design are preserved. Dedicated
+acceptance, remaining broad issue criteria, HostHavoc and remote production transport
+are not marked complete. No LLM, spawning action, campaign, third-party integration,
+paid inference, cloud deployment or billing was added.
