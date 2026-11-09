@@ -20,6 +20,13 @@ MIGRATIONS = (
         )""",
         "CREATE INDEX observations_session ON observations(session_id, sequence)",
     ),
+    (
+        "CREATE TABLE response_control (session_id TEXT PRIMARY KEY "
+        "REFERENCES sessions(session_id), document TEXT NOT NULL, changed_at TEXT NOT NULL)",
+        "CREATE TABLE responses (event_id TEXT PRIMARY KEY REFERENCES observations(event_id), "
+        "session_id TEXT NOT NULL REFERENCES sessions(session_id), document TEXT NOT NULL)",
+        "CREATE INDEX responses_session ON responses(session_id)",
+    ),
 )
 
 
@@ -32,8 +39,9 @@ class UnknownSession(Exception):
 
 
 class Store:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, cooldown: int = 15):
         self.path = path
+        self.cooldown = cooldown
 
     @contextmanager
     def connection(self) -> Iterator[sqlite3.Connection]:
@@ -105,6 +113,9 @@ class Store:
                     observation.model_dump_json(),
                 ),
             )
+            from overlord.response import decide
+
+            decide(conn, observation, self.cooldown)
             return True
 
     def observations(self, session_id: UUID, after: int, limit: int) -> list[Observation]:

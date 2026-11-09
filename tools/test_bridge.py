@@ -34,10 +34,10 @@ def main() -> None:
             "map_name": "Altis",
         }
 
-        def submit(identifier: str, kind: str, body: dict[str, object], expected: int) -> None:
+        def submit(identifier: str, kind: str, body: dict[str, object], expected: int) -> list:
             fixture = temp / "body.json"
             fixture.write_text(json.dumps(body), encoding="utf-8")
-            subprocess.run(
+            result = subprocess.run(
                 [
                     str(build / "extension_smoke.exe"),
                     str(build / "overlord_bridge_x64.dll"),
@@ -48,7 +48,12 @@ def main() -> None:
                 ],
                 check=True,
                 timeout=15,
+                capture_output=True,
+                text=True,
             )
+            print(result.stdout)
+            line = next(line for line in result.stdout.splitlines() if line.startswith("result="))
+            return json.loads(line.removeprefix("result="))
 
         # Offline requests still enqueue promptly and complete with an error, never a false ack.
         submit(session, "session", data, 0)
@@ -116,6 +121,37 @@ def main() -> None:
                 stored = client.get(f"/v1/sessions/{session}/observations").json()
                 assert [row["event_id"] for row in stored] == [row["event_id"] for row in events]
                 assert stored[1]["payload"]["attacking_side"] == "UNKNOWN"
+                # Exercise response download and acknowledgement through the actual DLL worker.
+                packet = submit(str(uuid4()), "command", {"session_id": session}, 200)[1]
+                assert packet[2:5] == [False, False, []]
+                client.put(
+                    f"/v1/sessions/{session}/control", json={"enabled": True}
+                ).raise_for_status()
+                time.sleep(0.1)
+                fresh = {
+                    **events[1],
+                    "event_id": str(uuid4()),
+                    "timestamp": datetime.now(UTC).isoformat(),
+                    "payload": {"checkpoint_id": "checkpoint_alpha", "attacking_side": "BLUFOR"},
+                }
+                submit(fresh["event_id"], "event", fresh, 201)
+                packet = submit(str(uuid4()), "command", {"session_id": session}, 200)[1]
+                command = packet[4]
+                assert command[2:5] == ["dispatch_reserve", "reserve_alpha", "response_alpha"]
+                assert (
+                    submit(str(uuid4()), "command", {"session_id": session}, 200)[1][4] == command
+                )
+                acknowledgement = dict(
+                    protocol_version="1.0",
+                    session_id=session,
+                    command_id=command[0],
+                    idempotency_key=command[1],
+                    status="executed",
+                    result="movement_order_assigned",
+                )
+                submit(command[0], "ack", acknowledgement, 200)
+                submit(command[0], "ack", acknowledgement, 200)
+                assert submit(str(uuid4()), "command", {"session_id": session}, 200)[1][4] == []
                 subprocess.run(
                     [sys.executable, "-m", "overlord.inspect", "--latest"], check=True, timeout=10
                 )

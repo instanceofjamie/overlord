@@ -16,4 +16,7 @@ int main() {
     assert(queue.submit({"retry", "event", "{}"}) == "queued");
     job = queue.take(); assert(job && job->id == "1"); queue.complete("1", 0);
     queue.discard_completed(); assert(queue.poll("1") == "[-2]");
+    queue.complete("retry", 200, "[1,2,3]");
+    assert(queue.poll("retry") == "[200,[1,2,3]]");
+    assert(queue.poll("retry") == "[-2]");
 }

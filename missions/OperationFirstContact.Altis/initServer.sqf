@@ -4,6 +4,11 @@ OL_initialized = true;
 call compile preprocessFileLineNumbers "observer.sqf";
 OL_session = call OL_fnc_uuid;
 OL_checkpointReported = false;
+OL_lastCheckpointReport = -100;
+call compile preprocessFileLineNumbers "executor.sqf";
+OL_reserveGroup = group (missionNamespace getVariable ["overlord_reserve_leader", objNull]);
+OL_reserveGroup setVariable ["OL_owned", true];
+{_x disableAI "PATH"} forEach units OL_reserveGroup;
 OL_outbox = [];
 OL_sessionBody = format ["{""session_id"":""%1"",""mission_name"":""Operation First Contact"",""map_name"":""Altis""}", OL_session];
 OL_outbox pushBack [OL_session, "session", OL_sessionBody, "session"];
@@ -16,7 +21,8 @@ OL_outbox pushBack [OL_session, "session", OL_sessionBody, "session"];
 } forEach [
     ["friendly_base", [14500,16000,0], "NATO start", "mil_start", "ColorWEST"],
     ["checkpoint_alpha", [14500,16100,0], "OPFOR checkpoint", "mil_objective", "ColorEAST"],
-    ["enemy_reserve", [14600,16200,0], "Reserve location (unused)", "mil_dot", "ColorEAST"]
+    ["response_alpha", [14500,16100,0], "Reserve response", "mil_dot", "ColorEAST"],
+    ["enemy_reserve", [14600,16200,0], "OPFOR reserve", "mil_dot", "ColorEAST"]
 ];
 createCenter east;
 private _group = createGroup [east, true];

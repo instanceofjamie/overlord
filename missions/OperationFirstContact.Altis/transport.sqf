@@ -9,12 +9,18 @@ if ((_ready select 0) != "ready") exitWith {
 };
 private _registered = false;
 private _unavailable = false;
+private _lastPoll = -10;
 while {true} do {
+    if (_registered && {count OL_outbox == 0} && {diag_tickTime - _lastPoll >= 2}) then {
+        OL_outbox pushBack [call OL_fnc_uuid, "command", format ["{""session_id"":""%1""}", OL_session], "command poll"];
+        _lastPoll = diag_tickTime;
+    };
     if (count OL_outbox > 0) then {
         private _item = OL_outbox select 0;
         _item params ["_id", "_kind", "_body", "_label"];
         private _submitted = "overlord_bridge" callExtension ["post", [_id, _kind, _body]];
         private _code = -1;
+        private _reply = [];
         if ((_submitted select 0) == "queued") then {
             // Poll yields between frames. DLL has its own finite per-phase HTTP timeouts.
             // No new requests are submitted while this one remains in flight.
@@ -24,7 +30,7 @@ while {true} do {
                 sleep 0.25;
                 private _polled = "overlord_bridge" callExtension ["poll", [_id]];
                 private _text = _polled select 0;
-                if ((_text select [0,1]) == "[") then {_code = (parseSimpleArray _text) param [0,-1]};
+                if ((_text select [0,1]) == "[") then {_reply = parseSimpleArray _text; _code = _reply param [0,-1]};
                 if (!_warned && {diag_tickTime - _started > 8}) then {
                     ["DIRECTOR UNAVAILABLE: request still pending; gameplay continues"] call OL_fnc_status;
                     _warned = true;
@@ -34,8 +40,14 @@ while {true} do {
         };
         if (_code in [200,201]) then {
             if (_kind == "session") then {_registered = true};
-            [format ["DELIVERY CONFIRMED %1 (%2), session %3", _label, _id, OL_session]] call OL_fnc_status;
+            if (_kind != "command") then {
+                [format ["DELIVERY CONFIRMED %1 (%2), session %3", _label, _id, OL_session]] call OL_fnc_status;
+            };
             OL_outbox deleteAt 0;
+            if (_kind == "command" && {count _reply == 2}) then {
+                // isNil code executes unscheduled: validation, latch and assignment cannot interleave.
+                isNil {[_reply select 1] call OL_fnc_receiveCommand};
+            };
             _unavailable = false;
         } else {
             if (!_unavailable) then {

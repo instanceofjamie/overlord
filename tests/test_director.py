@@ -74,7 +74,7 @@ def test_roundtrip_restart_and_order(client, settings):
         assert [r["event_id"] for r in rows] == [attacked["event_id"], started["event_id"]]
         assert restarted.get(path, params={"offset": 1, "limit": 1}).json() == rows[1:]
     with sqlite3.connect(settings.database_path) as conn:
-        assert conn.execute("PRAGMA user_version").fetchone()[0] == 1
+        assert conn.execute("PRAGMA user_version").fetchone()[0] == 2
         assert conn.execute("SELECT count(*) FROM observations").fetchone()[0] == 2
 
 

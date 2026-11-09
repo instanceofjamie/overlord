@@ -1,20 +1,18 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-# Operation First Contact — Windows local observation demo
+# Operation First Contact — Windows local reserve response demo
 
-Target: **Arma 3 x64 2.22**, vanilla Altis. One playable NATO rifleman and two OPFOR
-guards behind sandbags, 100m north of the start. The checkpoint and start are near
-the Altis airfield. This demo only observes: no director orders, planning or model
-calls. Scenario setup creates the guards and barriers locally on the server; these
-are mission content, not remotely requested actions.
+Target: **Arma 3 x64 2.22**, vanilla Altis, local Eden preview. The existing
+checkpoint/observer/async DLL path is retained. One editor-placed OPFOR group
+(`reserve_alpha`, leader `overlord_reserve_leader`) starts near `enemy_reserve`.
+Only `response_alpha` at the checkpoint is a permitted destination. The reserve's
+PATH AI starts disabled so recommendation-only tests leave it in place; execution
+enables PATH once and assigns one MOVE waypoint. No units are spawned by commands.
 
-**Verification status:** automated Python and Windows DLL/API checks passed. On
-2026-11-08 the operator confirmed that Eden opens without warning after the metadata
-fix and that the firing playtest produced two recorded events: mission start and
-checkpoint attack. This is operator-reported real-game evidence, not just the
-transport harness. The operator also confirmed detection during director downtime and delivery of
-exactly two events after starting it without restarting the mission. Repeat-hit/
-fatal-hit cases and dedicated multiplayer still need confirmation. The inspector prints recorded facts; SITREP formatting
-remains a subsequent increment. See [dated evidence](verification.md).
+The operator confirmed the previous observation/downtime demo on 2026-11-08.
+**This new movement/executor behaviour still requires the playtest below.**
+Automated checks cannot establish Arma movement, terrain or locality behaviour.
+The existing inspector still prints stored observations; no SITREP formatter exists
+on latest main, and none is introduced here.
 
 ## 1. Obtain/build and install
 
@@ -87,86 +85,131 @@ on the Windows PC for the normal demo; a director on another PC is unsupported.
 Do not bind this unauthenticated API publicly. Check
 <http://127.0.0.1:8000/health> returns `{"status":"ok"}`.
 
-## 3. Trigger and inspect (short playtest)
+## 3. Recommendation-only → explicit enable → fresh attack
 
-1. Start/restart the scenario, not a saved game. The server creates a new random
-   UUID session for every run and logs it plus `productVersion`. Expect in-game
-   **DETECTED mission_started**, then separate **DELIVERY CONFIRMED session** and
-   **DELIVERY CONFIRMED mission_started** statuses. Initial delivery can take a few
-   seconds. The same messages go to RPT prefixed `OVERLORD`.
-2. Open the map (`M`): locate `checkpoint_alpha` north of `friendly_base`;
-   `enemy_reserve` is a named, unused location. Step out from the starting H-barrier cover and shoot an OPFOR guard. Expect
-   **DETECTED checkpoint_attacked** followed separately by **DELIVERY CONFIRMED
-   checkpoint_attacked**. Further hits, including the second guard, produce no
-   additional attack observations in this run.
-3. In a second PowerShell at the repo root:
+Use the updated DLL **and** mission from this branch. With Arma closed, back up
+and move the old installed `@OVERLORD` and mission directories before reinstalling;
+the installer deliberately refuses overwrites. Restart Arma after updating the DLL.
+Never resume a saved scenario: Play/Restart creates a new session with execution off.
+
+1. Start Overlord using section 2, then load the mission in Eden and Play. Note the
+   session UUID from OVERLORD statuses/RPT. Map: NATO start, checkpoint, reserve,
+   response marker. Expect `DETECTED mission_started`, confirmed delivery and
+   `execution enabled=false`. Do not shoot the reserve.
+2. Shoot **one** checkpoint guard (leave the other alive). Expect checkpoint attack
+   detection and delivery, then `RESPONSE proposed`. If the instigator was UNKNOWN,
+   the deliberate outcome is `no_action`: inspect the event and try a fresh attack
+   rather than treating unknown attribution as hostile knowledge. Inspect from a
+   second PowerShell in the repository, using the exact UUID:
 
    ```powershell
-   .\.venv\Scripts\overlord-inspect.exe --latest
-   # Prefer the explicit session if other simulations have run:
-   .\.venv\Scripts\overlord-inspect.exe --session 'UUID_FROM_GAME'
+   $session = 'COPY-SESSION-UUID-HERE'
+   .\.venv\Scripts\python.exe -m overlord.inspect --session $session
+   .\.venv\Scripts\python.exe -m overlord.control --session $session status
    ```
 
-   Expect exactly two observations with `mission_started` and `checkpoint_attacked`,
-   `checkpoint_id=checkpoint_alpha`, unique event UUIDs and UTC timestamps. Check
-   that repeated hits leave the count at two. `--latest` means most recently
-   registered, not necessarily the game if another simulator registered later.
-   The same records are available at `/v1/sessions/UUID/observations` in API docs
-   (<http://127.0.0.1:8000/docs>); `GET /v1/sessions` lists recent registrations.
-4. Stop and restart the director with the same database path; inspect the same
-   session UUID again. Records must persist.
+   The response view shows command proposal, event UUID, explanation, expiry and
+   `committed=false`; execution remains disabled and the reserve stays put.
+3. Explicitly enable **future** dispatches:
 
-## 4. Downtime and retry test
+   ```powershell
+   .\.venv\Scripts\python.exe -m overlord.control --session $session enable
+   ```
 
-Start a **new scenario run** with the DLL installed but director stopped. Expect
-**DETECTED mission_started** and **DIRECTOR UNAVAILABLE / delivery unconfirmed**.
-Shoot a guard: detection must still appear and normal gameplay must continue.
-Start the director while staying in the mission; within the next retry window it
-should confirm the session and both observations. Inspect the session and confirm
-only two events. Network failures retry after 3s, reusing the original event IDs and
-JSON. There is no automatic inference or gameplay effect on reconnect.
+   Old proposals become `expired` with a mode-change explanation. Enabling does
+   not release them. Wait **at least 16 seconds** after the previous recommendation
+   (default cooldown 15s), then shoot the remaining checkpoint guard. This must be
+   a fresh, BLUFOR-attributed attack after enable. Hits are throttled to one report
+   per 3s, while director cooldown and commitment are separate protections.
+4. Observe `execution enabled=true`, `issued`, then `RESERVE executed:
+   movement_order_assigned` and acknowledgement delivery. Inspect `status` again:
+   the exact command and actual Arma acknowledgement are durable. Watch the reserve
+   walk towards `response_alpha` (about 140m from its start). `executed` means the
+   movement order was assigned, **not** physical arrival or tactical success.
+5. Verify duplicate delivery. In Eden's Escape → Debug Console, execute **SERVER**
+   (LOCAL in singleplayer) and note the waypoint count:
 
-Alternatively stop the director after mission-start delivery, shoot, then restart.
-Do not exit/restart the scenario before retrying: the game-side buffer is memory-only.
-A DLL install/update needs a full Arma restart. Missing DLL detection does not hot-retry
-loading; install it, restart Arma and start a new scenario.
+   ```sqf
+   hint str count waypoints OL_reserveGroup;
+   isNil {[OL_lastCommandPacket] call OL_fnc_receiveCommand};
+   isNil {[OL_lastCommandPacket] call OL_fnc_receiveCommand};
+   hint str count waypoints OL_reserveGroup;
+   ```
 
-## Detection definition and limits
+   Count stays unchanged; the original acknowledgement is resent, no second order
+   is assigned. `OL_lastCommandPacket` exists only after a command was received.
+   Repeated attacks also produce `no_action` once committed. To report a debug
+   attack after both guards died (this is synthetic, not projectile evidence):
 
-`checkpoint_attacked` means **the first positive Hit or a Killed event on either
-registered checkpoint guard during this mission run**. It does not mean a shot
-passed nearby or hit the sandbags. Local server-owned entity handlers share an
-immediate one-shot latch; fatal-hit coverage and repeated/explosive handlers cannot
-create an unlimited stream. This deliberately also covers noncombat injury/death;
-it reports a guard being harmed, not proven hostile intent. Shoot the guard in the
-playtest, rather than relying on suppression. Attribution uses only an available
-`CAManBase` instigator's current group side; absent/unsupported evidence is UNKNOWN,
-never a guess based on the nearest player or source vehicle.
+   ```sqf
+   ["checkpoint_attacked", "{""checkpoint_id"":""checkpoint_alpha"",""attacking_side"":""BLUFOR""}"] call OL_fnc_observe;
+   ```
 
-The label and `attacking_side` remain **reported game observations**, not automatically
-knowledge available to OPFOR. Confidence, provenance, intent and faction-authorised
-context remain future work under #16. The v1.0 schema is unchanged; all payloads
-remain bounded. UTC uses the game host's system clock, not the simulated 2035 date.
+## 4. Pause, downtime, expiry and human override
 
-Server-only initialization, server-local guards and `isServer`/`local` checks keep
-observation authority on the host. This is a path toward multiplayer, not tested
-support for ownership migration, untrusted clients, persistence through save/load,
-respawn or arbitrary mission editing. With one player slot and no HC it stays simple.
+Pause from PowerShell:
 
-## If the test fails
+```powershell
+.\.venv\Scripts\python.exe -m overlord.control --session $session pause
+.\.venv\Scripts\python.exe -m overlord.control --session $session status
+# When ready for future fresh attacks:
+.\.venv\Scripts\python.exe -m overlord.control --session $session resume
+# Return to recommendation-only:
+.\.venv\Scripts\python.exe -m overlord.control --session $session disable
+```
 
-- **No detection:** ensure the right scenario is loaded and shoot a guard, not terrain
-  or cover. Inspect RPT for SQF errors. Press Esc for the debug console; use Local Exec
-  on `copyToClipboard str productVersion` to capture the exact runtime version.
-- **Detected but unavailable:** verify `/health`, port 8000, x64, BattlEye disabled,
-  DLL at `@OVERLORD\overlord_bridge_x64.dll`, launcher parameter, and full game restart.
-  Missing DLL/blocked loading produces a visible unavailable message.
-- **HTTP 400/409/422:** delivery is rejected and retries stop visibly. Preserve the
-  event/session IDs and RPT/director logs for a bug report; do not claim delivery.
-- **Pending over 8s:** the mission warns without blocking gameplay or piling up requests.
-  Check director health. The native worker's phase timeouts will eventually return a
-  status; queueing alone never displays delivery success.
+Pause prevents new retrieval/dispatch. It does not cancel a response already handed
+to transport or an existing movement order. For an immediate game-side veto before
+an in-flight command applies, run `OL_localPaused = true;` on SERVER in the debug
+console. Restore with `OL_localPaused = false;`. A rejected issued command still
+consumes the session's commitment. Resume/enable always requires fresh evidence;
+mode transitions invalidate every undispatched proposal/approval. Idempotent repeat
+control calls do not change its boundary. The director retains control mode in SQLite
+across a service restart; a new mission session always defaults off.
 
-Report: exact runtime version, editor or hosted MP, session UUID, detection/delivery
-messages, inspector output and any `OVERLORD`/SQF RPT errors. No broad issue should be
-closed until the corresponding game/host acceptance tests genuinely pass.
+Run separate **Restart** sessions for these tests (one commitment per session):
+
+- **Offline observation:** stop Overlord with Ctrl-C before Play. Attack while it is
+  down; gameplay and detection continue. Restart Overlord and verify retained IDs
+  deliver once. Reports over 120s old deliberately produce `no_action`. No new order
+  can be obtained while offline. The game outbox is memory-only until mission exit.
+- **Offline after order:** after an executed command, stop/restart Overlord with the
+  same database. Confirm the stored acknowledgement remains and no additional
+  waypoint appears. If an ack is lost while the director is down, the game retains
+  and retries it. If delivery stays unresolved beyond expiry, director status is
+  `uncertain`, with commitment retained; a late actual ack can resolve it.
+- **Paused:** fresh session, pause before attacking; expect `no_action` and no move.
+  Resume, wait out cooldown if relevant, then attack afresh. For immediate local
+  rejection, set `OL_localPaused=true` before an enabled fresh attack; expect
+  `rejected/paused`, no waypoint, commitment consumed. Restart for another dispatch.
+- **Human override:** after successful movement assignment, pause and run on SERVER:
+
+  ```sqf
+  OL_localPaused = true;
+  OL_reserveGroup setVariable ["OL_owned", false];
+  private _oldWaypoints = waypoints OL_reserveGroup;
+  reverse _oldWaypoints;
+  {deleteWaypoint _x} forEach _oldWaypoints;
+  private _wp = OL_reserveGroup addWaypoint [[14650,16250,0],0];
+  _wp setWaypointType "MOVE";
+  OL_reserveGroup setCurrentWaypoint _wp;
+  ```
+
+  This explicit human order should take over. Replay `OL_lastCommandPacket` and
+  inspect waypoints: the integration must not restore its old waypoint. Zeus can
+  similarly take control; the demo adds no Zeus module. Before dispatch, revoke
+  `OL_owned` to refuse integration orders. Do not transfer the reserve to a headless
+  client: nonlocal groups are rejected rather than remotely commandeered.
+
+Commands expire on a UTC minute boundary **60–120s** after creation. Keep Windows
+clock correct; accelerated mission time is irrelevant. A pending command expires
+without dispatch; an issued command with no ack becomes uncertain. An empty/new
+SQLite database is **not** continuity evidence: the game latch still rejects a
+second commitment, but the audit history is gone. Preserve the database; do not
+reset it to bypass commitment. Save/load continuity is unsupported: restart the
+scenario for a new session, never reset executor variables in an active mission.
+
+Capture `productVersion`, session UUID, checkpoint events, response JSON, RPT statuses,
+waypoint counts before/after retries, and observed movement/override. Automated
+Python/native/ABI tests are distinct from this live evidence. Dedicated multiplayer,
+HostHavoc and remote authentication remain subsequent work.

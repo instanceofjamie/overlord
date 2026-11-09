@@ -6,6 +6,22 @@ Related issues: [#26](https://github.com/instanceofjamie/overlord/issues/26),
 [#11](https://github.com/instanceofjamie/overlord/issues/11),
 [#22](https://github.com/instanceofjamie/overlord/issues/22).
 
+## Reserve-loop extension — 2026-11-09
+
+The same DLL worker now also accepts `post [ticket, "command"|"ack", json]`.
+Paths are fixed to `/v1/commands/poll` and `/v1/acknowledgements`. Command responses
+are capped at 1024 bytes and terminal poll returns `[http_status, packet]`; all
+other request types retain `[http_status]`. The response is data parsed with
+`parseSimpleArray`, never executable SQF. Existing queue capacity, timeouts and
+nonblocking entry points remain. The SQF loop polls every 2s when its outbox is
+empty; events and retained acknowledgements take priority. Reset still clears only
+completed DLL tickets, never the mission's commitment/processed-ID ledger.
+
+See [current protocol and failure semantics](architecture.md) and the updated
+[playtest](local-demo.md). The rest of this document records the **prior observation
+milestone**, including its then-current limitations; command polling/ack support
+supersedes those historical statements. Production selection is still open.
+
 ## Version and selection
 
 The mounted Steam installation contains `arma3_x64.exe` and `arma3server_x64.exe`
