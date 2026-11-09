@@ -124,7 +124,7 @@ Never resume a saved scenario: Play/Restart creates a new session with execution
 4. Observe `execution enabled=true`, `issued`, then `RESERVE executed:
    movement_order_assigned` and acknowledgement delivery. Inspect `status` again:
    the exact command and actual Arma acknowledgement are durable. Watch the reserve
-   walk towards `response_alpha` (200m or so from its start). `executed` means the
+   walk towards `response_alpha` (about 140m from its start). `executed` means the
    movement order was assigned, **not** physical arrival or tactical success.
 5. Verify duplicate delivery. In Eden's Escape → Debug Console, execute **SERVER**
    (LOCAL in singleplayer) and note the waypoint count:

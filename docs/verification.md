@@ -179,7 +179,10 @@ Performed for this increment:
   temporary WSL path-translation wrapper, stalled without output and was terminated.
   Do not count that attempt as a pass. Windows CI runs the extended native harness
   directly, including offline/duplicates/invalid-version/timeout and new command/ack
-  cases, plus installer regression. Its result must be checked separately on the PR.
+  cases, plus installer regression. This direct Windows CI passed on implementation
+  commit `bbf9fb7`: [run 42618815957](https://github.com/instanceofjamie/overlord/actions/runs/42618815957).
+  The initial Python CI found an unused local typing suppression with its dependency
+  versions; replaced it with an explicit cast in `6a00f6d` (local checks pass).
 
 The updated Windows/Eden instructions in `docs/local-demo.md` cover recommendation
 inspection, fresh attack after explicit enable, movement/ack, replay waypoint count,
