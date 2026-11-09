@@ -161,7 +161,7 @@ Performed for this increment:
   Threaded tests ran outside the restricted sandbox. The existing upstream
   Starlette/HTTPX deprecation warning remains.
 - Ruff lint/format and strict mypy (12 modules) passed; `git diff --check` passed.
-  The installed Pydantic/mypy combination required an explicit arg-type suppression
+  The installed Pydantic/mypy combination required an explicit typing cast
   at the existing discriminated-union TypeAdapter construction; runtime schema and
   observation validation tests remain unchanged.
 - Linux native queue regression passed (CMake/CTest), including nested command

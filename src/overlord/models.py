@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal, cast
 from uuid import UUID
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, StringConstraints, TypeAdapter
@@ -45,7 +45,7 @@ class CheckpointAttacked(Envelope):
 
 
 Observation = Annotated[MissionStarted | CheckpointAttacked, Field(discriminator="event_type")]
-observation_adapter: TypeAdapter[Observation] = TypeAdapter(Observation)  # type: ignore[arg-type]
+observation_adapter: TypeAdapter[Observation] = TypeAdapter(cast(Any, Observation))
 
 
 class IngestResult(Model):
