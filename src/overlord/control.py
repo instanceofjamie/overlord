@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import os
 from uuid import UUID
 
 import httpx
@@ -14,7 +15,12 @@ def main() -> None:
     parser.add_argument("operation", choices=["status", "enable", "disable", "pause", "resume"])
     args = parser.parse_args()
     try:
-        with httpx.Client(base_url="http://127.0.0.1:8000", trust_env=False, timeout=10) as client:
+        with httpx.Client(
+            base_url="http://127.0.0.1:8000",
+            trust_env=False,
+            timeout=10,
+            headers={"Authorization": "Bearer " + os.getenv("OVERLORD_OPERATOR_TOKEN", "")},
+        ) as client:
             path = f"/v1/sessions/{args.session}"
             response = client.get(path + "/responses")
             response.raise_for_status()

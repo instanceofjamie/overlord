@@ -25,6 +25,8 @@ class MissionStartedPayload(Model):
 class CheckpointAttackedPayload(Model):
     checkpoint_id: Identifier
     attacking_side: Literal["BLUFOR", "OPFOR", "INDEPENDENT", "UNKNOWN"]
+    report_channel: Literal["guard_radio", "none", "legacy_unverified"] = "legacy_unverified"
+    reserve_available: Annotated[bool, Field(strict=True)] = True
 
 
 class Envelope(Model):
@@ -44,7 +46,20 @@ class CheckpointAttacked(Envelope):
     payload: CheckpointAttackedPayload
 
 
-Observation = Annotated[MissionStarted | CheckpointAttacked, Field(discriminator="event_type")]
+class ProgressPayload(Model):
+    milestone: Literal[
+        "briefing_complete", "recon_reported", "extracted", "aborted", "operator_killed"
+    ]
+
+
+class OperationProgress(Envelope):
+    event_type: Literal["operation_progress"]
+    payload: ProgressPayload
+
+
+Observation = Annotated[
+    MissionStarted | CheckpointAttacked | OperationProgress, Field(discriminator="event_type")
+]
 observation_adapter: TypeAdapter[Observation] = TypeAdapter(cast(Any, Observation))
 
 
@@ -58,7 +73,13 @@ class Decision(Model):
     reason: Literal["observation_only"] = "observation_only"
 
 
+class Approval(Model):
+    command_id: UUID
+
+
 class Control(Model):
+    observation_only: Annotated[bool, Field(strict=True)] = False
+    automatic: Annotated[bool, Field(strict=True)] = True
     enabled: Annotated[bool, Field(strict=True)] = False
     paused: Annotated[bool, Field(strict=True)] = False
 
@@ -92,8 +113,10 @@ class Acknowledgement(Model):
         "expired",
         "assignment_failed",
         "uncertain",
+        "operation_complete",
     ]
 
 
 class CommandPoll(Model):
     session_id: UUID
+    include_report: Annotated[bool, Field(strict=True)] = False

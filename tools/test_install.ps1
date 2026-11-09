@@ -12,7 +12,7 @@ try {
     & (Join-Path $Root 'tools/install-demo.ps1') -ArmaPath $Game -MissionsPath $Missions -DllPath $DllPath
     $Installed = Join-Path $Game '@OVERLORD/overlord_bridge_x64.dll'
     if ((Get-FileHash $Installed).Hash -ne (Get-FileHash $DllPath).Hash) { throw 'DLL copy differs' }
-    foreach ($Name in @('mission.sqm','description.ext','initServer.sqf','initPlayerLocal.sqf','observer.sqf','transport.sqf','executor.sqf')) {
+    foreach ($Name in @('mission.sqm','description.ext','initServer.sqf','initPlayerLocal.sqf','observer.sqf','transport.sqf','executor.sqf','operation.sqf','flow.sqf')) {
         if (-not (Test-Path (Join-Path $Missions "OperationFirstContact.Altis/$Name"))) { throw "Missing $Name" }
     }
     $Refused = $false

@@ -10,6 +10,7 @@ OL_reserveGroup = group (missionNamespace getVariable ["overlord_reserve_leader"
 OL_reserveGroup setVariable ["OL_owned", true];
 {_x disableAI "PATH"} forEach units OL_reserveGroup;
 OL_outbox = [];
+call compile preprocessFileLineNumbers "operation.sqf";
 OL_sessionBody = format ["{""session_id"":""%1"",""mission_name"":""Operation First Contact"",""map_name"":""Altis""}", OL_session];
 OL_outbox pushBack [OL_session, "session", OL_sessionBody, "session"];
 [format ["SESSION %1; productVersion %2; transport async x64 DLL", OL_session, productVersion]] call OL_fnc_status;
@@ -19,7 +20,9 @@ OL_outbox pushBack [OL_session, "session", OL_sessionBody, "session"];
     private _marker = createMarker [_name, _position];
     _marker setMarkerType _type; _marker setMarkerColor _color; _marker setMarkerText _text;
 } forEach [
-    ["friendly_base", [14500,16000,0], "NATO start", "mil_start", "ColorWEST"],
+    ["friendly_base", [13900,15700,0], "NATO start", "mil_start", "ColorWEST"],
+    ["recon_alpha", [14280,15980,0], "Recon observation / report point", "mil_dot", "ColorWEST"],
+    ["extraction_alpha", [13900,15700,0], "Extraction and debrief", "mil_end", "ColorWEST"],
     ["checkpoint_alpha", [14500,16100,0], "OPFOR checkpoint", "mil_objective", "ColorEAST"],
     ["response_alpha", [14500,16100,0], "Reserve response", "mil_dot", "ColorEAST"],
     ["enemy_reserve", [14600,16200,0], "OPFOR reserve", "mil_dot", "ColorEAST"]
@@ -48,11 +51,14 @@ private _group = createGroup [east, true];
     _barrier setPosATL _x;
 } forEach [[14497,16098,0], [14503,16098,0]];
 // Starting cover gives the observer time to read statuses and choose when to engage.
-private _cover = createVehicle ["Land_HBarrier_3_F", [14500,16005,0], [], 0, "CAN_COLLIDE"];
-_cover setPosATL [14500,16005,0];
+private _cover = createVehicle ["Land_HBarrier_3_F", [13900,15705,0], [], 0, "CAN_COLLIDE"];
+_cover setPosATL [13900,15705,0];
 [] spawn {
     waitUntil {sleep 0.1; time > 0};
     private _count = (count allPlayers) max 1;
     ["mission_started", format ["{""player_count"":%1}", _count min 256]] call OL_fnc_observe;
     [] execVM "transport.sqf";
 };
+
+private _reconCover = createVehicle ["Land_HBarrier_3_F", [14280,15985,0], [], 0, "CAN_COLLIDE"];
+_reconCover setPosATL [14280,15985,0];

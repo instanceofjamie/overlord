@@ -12,7 +12,7 @@ private _unavailable = false;
 private _lastPoll = -10;
 while {true} do {
     if (_registered && {count OL_outbox == 0} && {diag_tickTime - _lastPoll >= 2}) then {
-        OL_outbox pushBack [call OL_fnc_uuid, "command", format ["{""session_id"":""%1""}", OL_session], "command poll"];
+        OL_outbox pushBack [call OL_fnc_uuid, "command", format ["{""session_id"":""%1"",""include_report"":true}", OL_session], "command poll"];
         _lastPoll = diag_tickTime;
     };
     if (count OL_outbox > 0) then {

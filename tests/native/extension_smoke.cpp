@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
         std::string body((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
         auto id = quote(argv[2]), kind = quote(argv[3]), encoded = quote(body);
         const char* args[] = {id.c_str(), kind.c_str(), encoded.c_str()};
-        char out[1024]{};
+        char out[4096]{};
         auto start = std::chrono::steady_clock::now();
         if (entry(out, sizeof(out), "post", args, 3) || std::string(out) != "queued")
             throw std::runtime_error(std::string("Enqueue failed: ") + out);

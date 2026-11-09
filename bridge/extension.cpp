@@ -45,7 +45,7 @@ int post(const overlord::Job& job, std::string& response) {
         do {
             if (!WinHttpReadData(request, buffer, sizeof(buffer), &read)) return 0;
             response.append(buffer, read);
-            if (response.size() > 1024) { response.clear(); return 0; }
+            if (response.size() > 2048) { response.clear(); return 0; }
         } while (read);
         if (response.empty() || response.front() != '[' || response.back() != ']') {
             response.clear(); return 0;

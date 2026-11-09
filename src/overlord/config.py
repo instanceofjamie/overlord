@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -16,3 +16,5 @@ class Settings(BaseSettings):
     provider: Literal["mock"] = "mock"
 
     response_cooldown_seconds: int = Field(default=15, ge=0, le=3600)
+
+    operator_token: SecretStr | None = None

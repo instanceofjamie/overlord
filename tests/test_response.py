@@ -207,9 +207,7 @@ def test_migrate_v1_preserves_observations(tmp_path):
     store.initialize()
     store.initialize()
     assert store.observations(session, 0, 100) == [observation]
-    assert Responses(store).inspect(session) == dict(
-        control=dict(enabled=False, paused=False), responses=[]
-    )
+    assert Responses(store).inspect(session) == dict(control=Control().model_dump(), responses=[])
 
 
 def test_ack_before_issue_wrong_key_and_inconsistent_result(loop):

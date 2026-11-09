@@ -5,6 +5,89 @@ This milestone implements part of #2/#5/#8/#9/#10/#13. It stops at one determini
 reserve response. The prior observation path passed an operator Eden/outage playtest;
 the new executor still requires [live verification](local-demo.md).
 
+## Playable operation and supported operator workflow — 2026-11-09
+
+The local operation extends the bounded loop below. `flow.sqf` contains the pure
+transition function used by server progression; `operation.sqf` validates the player,
+life state, current phase and required marker distance before accepting an action.
+`initPlayerLocal.sqf` creates three tasks once, updates their states once per phase,
+and adds the normal action-menu interactions and diary. No timer starts combat.
+
+| Current phase | Accepted interaction/evidence | Next phase |
+| --- | --- | --- |
+| briefing | Begin patrol at friendly_base, alive, within 30m | recon |
+| recon | Explicit recon report at recon_alpha, alive, within 20m | extraction |
+| extraction | Extract at extraction_alpha, alive, within 30m | succeeded |
+| recon / extraction | Explicit abort at extraction, within 30m | failed |
+| any nonterminal | Player killed | failed |
+| any | Repeated/invalid interaction | Unchanged |
+
+Checkpoint harm is an orthogonal milestone; it never completes reconnaissance,
+forces engagement or changes a successful outcome. `operation_progress` observations
+carry a closed milestone enum and the existing UUID/time/session envelope. Python's
+`operation.py` replays accepted progression in receipt order; invalid/out-of-order
+milestones remain stored evidence but do not create success. Terminal progression
+expires undispatched responses; command polling stops new dispatch after completion.
+The authoritative game also rejects late commands with `operation_complete`.
+
+**Actual previous cause:** the 12:51 and 12:54 logs showed proposals with execution
+disabled. The intended per-session default, a CLI-only control, using an ended session
+UUID, and running system Python instead of the project environment caused friction.
+There was no missing application role: the previous loopback API was unauthenticated.
+This change adds the missing supported control surface and a limited authentication
+boundary rather than automatically granting authority to every caller.
+
+The normal CLI launcher generates a random 32-byte URL-safe operator credential per
+service run (or uses private `OVERLORD_OPERATOR_TOKEN`) and prints a private panel
+link with a fragment credential. The public HTML does not contain it. The fragment
+is removed from the URL and retained in tab session storage; mutation requests use
+Bearer authentication. Constant-time comparison protects `/control` and `/approve`;
+missing/wrong credentials return 403, an unconfigured service returns 503, and foreign
+browser origins are rejected. Read-only status explains the permission boundary.
+The normal Windows/WSL launch scripts select the correct project environment.
+Game ingestion, polling and acknowledgements still assume a trusted local host:
+this is not remote transport authentication and must not be publicly exposed.
+
+Control adds `observation_only` and `automatic`. Defaults are recommendation-only;
+`enabled=true, automatic=false` permits fresh recommendations to be reviewed and
+explicitly approved by command UUID. Automatic mode keeps the previous eligible
+fresh-event behaviour. Every actual mode change still expires undispatched proposals
+and advances the evidence boundary. Approval checks enabled/not paused, live expiry,
+freshness and budget in the same SQLite writer transaction. It records approval time
+and kind; issue and ack receive times are also retained in response JSON. No new
+schema migration is needed; old JSON defaults conservatively and old approval
+metadata is displayed as unrecorded rather than invented.
+
+**Minimal knowledge boundary:** `checkpoint_attacked` now includes `report_channel`
+(`guard_radio|none|legacy_unverified`) and `reserve_available`. The mission emits a
+guard radio report only when a conscious living checkpoint guard can report the
+harm. This is an instantaneous local radio abstraction, not realistic range/delay,
+jamming or false-report simulation. Old unproven telemetry defaults unverified and
+cannot authorize a reserve. Unknown attacker or unavailable reserves yields no action.
+`debrief.faction_reports` is a separate materialized view of those guard reports,
+with event UUID, source, age/time, checkpoint reference and reported confidence;
+it contains no player position. Director recon/progress facts are not copied there.
+Arma's native perception continues normally; no `reveal` or forced detection is used.
+
+The normal AAR combines local observed progress/executor results with a labelled
+last-received director snapshot. A command poll may request `include_report=true`:
+slot 6 is then a bounded list of factual report lines. Without that flag the original
+six-slot wire remains. The bridge response cap is now 2048 bytes. No report text is
+compiled. The panel's readable debrief uses the stored event record, proposals,
+approvals and real acks; arrival remains untracked. Offline/local records never
+pretend to be persisted, and missing results remain unknown. The local outbox is
+32 entries, with attacks capped at 24 to reserve progress/ack space; it is not durable
+across scenario exit. The mission stays running after debrief so delivery can finish.
+
+This is **single-player local Eden preview**, not a new multiplayer/remote execution
+interface. The three task objects and action authority are local/server scoped.
+Four roles, dedicated play, Headless Client migration and HostHavoc remain subsequent
+work. See [startup, permissions and both playtests](local-demo.md).
+
+## Bounded response contract reference
+
+The details below describe the retained response loop, with the additions above.
+
 ```mermaid
 flowchart LR
     Game[Authoritative SQF observer] --> Queue[Async DLL worker]
@@ -35,7 +118,8 @@ in `mission.sqm`, with no command-time spawning. Reserve PATH AI is disabled unt
 an accepted command to keep recommendation-only tests stationary.
 
 An attack means positive checkpoint guard Hit or Killed, throttled to once per 3s.
-Only `checkpoint_alpha` with a reported BLUFOR attacker can recommend dispatch;
+Only `checkpoint_alpha` with a reported BLUFOR attacker, guard radio report and
+available reserve can recommend dispatch;
 UNKNOWN, other checkpoints, stale (>120s), future (>5s), paused, cooling down,
 already approved or committed conditions produce durable `no_action` reasons.
 Cooldown defaults to 15s and is configured by `OVERLORD_RESPONSE_COOLDOWN_SECONDS`.
@@ -92,7 +176,7 @@ reason, command, commitment, state and actual ack. `POST /v1/commands/poll` acce
 No command uses `[]` in slot 4. The response carries the last decision status;
 full explanations and trigger evidence are in the response view. Only one command
 is delivered per poll. JSON arrays/booleans are parsed with `parseSimpleArray`, never
-`compile`. The bridge downloads at most 1024 bytes on command polls and wraps the
+`compile`. The bridge downloads at most 2048 bytes on command polls and wraps the
 packet as `[http_status, packet]`. Existing event/session status-only polls remain
 compatible. Every request uses the same finite worker queue; SQF yields while waiting.
 
@@ -151,7 +235,8 @@ upgrading; restore backup to downgrade. Events remain append-only; response rows
 materialize their latest lifecycle/result (not a separate append-only transition
 journal). Retention/redaction remains operator managed: no automatic purge, no player
 identity collection. Preserve records for an unresolved mission. This is for modest
-local demo traffic and a trusted loopback host, without authentication.
+local traffic and a trusted loopback host; operator mutations now require the
+launch credential described above.
 
 HostHavoc, dedicated multiplayer, headless ownership migration, remote HTTPS/auth,
 native webRequest selection, wider action APIs, paid inference, tactical planning,

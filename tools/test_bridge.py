@@ -62,6 +62,7 @@ def main() -> None:
             "OVERLORD_DATABASE_PATH": str(temp / "test.sqlite3"),
             "OVERLORD_HOST": "127.0.0.1",
             "OVERLORD_PORT": "8000",
+            "OVERLORD_OPERATOR_TOKEN": "test-operator",
         }
         process = subprocess.Popen(
             [
@@ -79,7 +80,10 @@ def main() -> None:
         )
         try:
             with httpx.Client(
-                base_url="http://127.0.0.1:8000", trust_env=False, timeout=2
+                base_url="http://127.0.0.1:8000",
+                trust_env=False,
+                timeout=2,
+                headers={"Authorization": "Bearer test-operator"},
             ) as client:
                 for _ in range(100):
                     if process.poll() is not None:
@@ -122,7 +126,9 @@ def main() -> None:
                 assert [row["event_id"] for row in stored] == [row["event_id"] for row in events]
                 assert stored[1]["payload"]["attacking_side"] == "UNKNOWN"
                 # Exercise response download and acknowledgement through the actual DLL worker.
-                packet = submit(str(uuid4()), "command", {"session_id": session}, 200)[1]
+                packet = submit(
+                    str(uuid4()), "command", {"session_id": session, "include_report": True}, 200
+                )[1]
                 assert packet[2:5] == [False, False, []]
                 client.put(
                     f"/v1/sessions/{session}/control", json={"enabled": True}
@@ -132,10 +138,17 @@ def main() -> None:
                     **events[1],
                     "event_id": str(uuid4()),
                     "timestamp": datetime.now(UTC).isoformat(),
-                    "payload": {"checkpoint_id": "checkpoint_alpha", "attacking_side": "BLUFOR"},
+                    "payload": {
+                        "checkpoint_id": "checkpoint_alpha",
+                        "attacking_side": "BLUFOR",
+                        "report_channel": "guard_radio",
+                    },
                 }
                 submit(fresh["event_id"], "event", fresh, 201)
-                packet = submit(str(uuid4()), "command", {"session_id": session}, 200)[1]
+                packet = submit(
+                    str(uuid4()), "command", {"session_id": session, "include_report": True}, 200
+                )[1]
+                assert len(packet) == 7 and len(json.dumps(packet).encode()) < 2048
                 command = packet[4]
                 assert command[2:5] == ["dispatch_reserve", "reserve_alpha", "response_alpha"]
                 assert (

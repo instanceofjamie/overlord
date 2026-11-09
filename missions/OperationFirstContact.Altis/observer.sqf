@@ -45,7 +45,8 @@ OL_fnc_observe = {
         "{""protocol_version"":""1.0"",""session_id"":""%1"",""event_id"":""%2"",""event_type"":""%3"",""timestamp"":""%4"",""payload"":%5}",
         OL_session, _id, _type, call OL_fnc_timestamp, _payload];
     // Bounded in-memory outbox. Report at most one attack per three seconds.
-    if (count OL_outbox >= 4) exitWith {["OUTBOX FULL: observation dropped"] call OL_fnc_status};
+    if (_type == "checkpoint_attacked" && {count OL_outbox >= 24}) exitWith {["Offline attack buffer full; local mission progression remains available"] call OL_fnc_status};
+    if (count OL_outbox >= 32) exitWith {["OUTBOX FULL: observation dropped"] call OL_fnc_status};
     OL_outbox pushBack [_id, "event", _body, _type];
     [format ["DETECTED %1 (event %2)", _type, _id]] call OL_fnc_status;
 };
@@ -53,6 +54,11 @@ OL_fnc_checkpointHit = {
     params ["_unit", "_instigator"];
     if (!isServer || {!local _unit} || {diag_tickTime - OL_lastCheckpointReport < 3}) exitWith {};
     // Throttle synchronously before scheduling/network; fresh attacks can follow operator enable.
+    if (OL_stage in ["succeeded", "failed"]) exitWith {};
+    if (!OL_checkpointReported) then {
+        OL_localFacts pushBack ("checkpoint harm observed at " + call OL_fnc_timestamp);
+        ["Checkpoint harm observed locally. A reserve response requires a surviving guard radio report and operator permission."] call OL_fnc_status;
+    };
     OL_checkpointReported = true;
     OL_lastCheckpointReport = diag_tickTime;
     private _side = "UNKNOWN";
@@ -62,5 +68,10 @@ OL_fnc_checkpointHit = {
             default {"UNKNOWN"};
         };
     };
-    ["checkpoint_attacked", format ["{""checkpoint_id"":""checkpoint_alpha"",""attacking_side"":""%1""}", _side]] call OL_fnc_observe;
+    // Minimal faction evidence: a surviving conscious checkpoint guard can radio the harm.
+    // Recon reports alone never give OPFOR player knowledge. No player coordinates sent.
+    private _channel = "none";
+    if (({alive _x && {lifeState _x != "INCAPACITATED"}} count units group _unit) > 0) then {_channel = "guard_radio"};
+    private _available = !isNull OL_reserveGroup && {({alive _x} count units OL_reserveGroup) > 0} && {OL_reserveGroup getVariable ["OL_owned", false]};
+    ["checkpoint_attacked", format ["{""checkpoint_id"":""checkpoint_alpha"",""attacking_side"":""%1"",""report_channel"":""%2"",""reserve_available"":%3}", _side, _channel, if (_available) then {"true"} else {"false"}]] call OL_fnc_observe;
 };

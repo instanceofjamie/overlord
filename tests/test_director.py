@@ -47,7 +47,11 @@ def event(session_id, kind="mission_started"):
         "timestamp": datetime.now(UTC).isoformat(),
         "payload": {"player_count": 4}
         if kind == "mission_started"
-        else {"checkpoint_id": "checkpoint_alpha", "attacking_side": "BLUFOR"},
+        else {
+            "checkpoint_id": "checkpoint_alpha",
+            "attacking_side": "BLUFOR",
+            "report_channel": "guard_radio",
+        },
     }
 
 

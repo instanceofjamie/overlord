@@ -17,7 +17,7 @@ class EditorData
 };
 binarizationWanted=0;
 randomSeed=17112026;
-sourceName="Operation First Contact - OVERLORD observation demo";
+sourceName="Operation First Contact - local reconnaissance operation";
 addons[]={"A3_Characters_F_BLUFOR","A3_Characters_F_OPFOR","A3_Map_Altis"};
 class ScenarioData { author="OVERLORD contributors"; };
 class Mission
@@ -34,9 +34,9 @@ class Mission
                 items=1;
                 class Item0
                 {
-                    dataType="Object"; class PositionInfo { position[]={14500,0,16000}; angles[]={0,0,0}; };
+                    dataType="Object"; class PositionInfo { position[]={13900,0,15700}; angles[]={0,0,0}; };
                     side="West"; flags=7;
-                    class Attributes { isPlayer=1; isPlayable=1; name="overlord_player"; description="NATO observer"; init="this setPosATL [14500,16000,0];"; };
+                    class Attributes { isPlayer=1; isPlayable=1; name="overlord_player"; description="NATO observer"; init="this setPosATL [13900,15700,0];"; };
                     id=1; type="B_Soldier_F"; atlOffset=0;
                 };
             };
