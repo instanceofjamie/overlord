@@ -18,14 +18,16 @@ struct Handle {
     operator HINTERNET() const { return value; }
 };
 // No arbitrary URL, proxy, redirects, commands or remote host configuration.
-int post(const overlord::Job& job) {
+int post(const overlord::Job& job, std::string& response) {
     Handle session{WinHttpOpen(L"OVERLORD-local/0.1", WINHTTP_ACCESS_TYPE_NO_PROXY,
                               WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0)};
     if (!session.value) return 0;
     if (!WinHttpSetTimeouts(session, 1000, 1000, 2000, 2000)) return 0;
     Handle connection{WinHttpConnect(session, L"127.0.0.1", 8000, 0)};
     if (!connection.value) return 0;
-    const wchar_t* path = job.kind == "session" ? L"/v1/sessions" : L"/v1/observations";
+    const wchar_t* path = job.kind == "session" ? L"/v1/sessions" :
+        job.kind == "command" ? L"/v1/commands/poll" :
+        job.kind == "ack" ? L"/v1/acknowledgements" : L"/v1/observations";
     Handle request{WinHttpOpenRequest(connection, L"POST", path, nullptr,
                                      WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0)};
     if (!request.value) return 0;
@@ -38,7 +40,18 @@ int post(const overlord::Job& job) {
     DWORD code = 0, size = sizeof(code);
     if (!WinHttpQueryHeaders(request, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
                              WINHTTP_HEADER_NAME_BY_INDEX, &code, &size, WINHTTP_NO_HEADER_INDEX)) return 0;
-    // API 200/201 acknowledges a committed record. Never read unbounded response bodies.
+    if (job.kind == "command" && code == 200) {
+        char buffer[512]; DWORD read = 0;
+        do {
+            if (!WinHttpReadData(request, buffer, sizeof(buffer), &read)) return 0;
+            response.append(buffer, read);
+            if (response.size() > 1024) { response.clear(); return 0; }
+        } while (read);
+        if (response.empty() || response.front() != '[' || response.back() != ']') {
+            response.clear(); return 0;
+        }
+    }
+    // Only command polls read a bounded, data-only response body.
     return (int)code;
 }
 struct Bridge {
@@ -54,7 +67,8 @@ struct Bridge {
         std::thread([this] {
             for (;;) {
                 if (auto job = queue.take()) {
-                    try { queue.complete(job->id, post(*job)); }
+                    try { std::string response; auto code = post(*job, response);
+                        queue.complete(job->id, code, code == 200 ? response : ""); }
                     catch (...) { queue.complete(job->id, 0); }
                 } else std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
@@ -116,7 +130,7 @@ extern "C" __declspec(dllexport) int __stdcall RVExtensionArgs(
         std::string kind = count > 1 ? argument(args[1]) : "";
         std::string body = count > 2 ? argument(args[2]) : "";
         if (command == "post" && count == 3 && valid_id(id) &&
-            (kind == "session" || kind == "event") &&
+            (kind == "session" || kind == "event" || kind == "command" || kind == "ack") &&
             body.size() <= 2048) {
             output(out, size, bridge().queue.submit({id, kind, body})); return 0;
         }

@@ -44,16 +44,17 @@ OL_fnc_observe = {
     private _body = format [
         "{""protocol_version"":""1.0"",""session_id"":""%1"",""event_id"":""%2"",""event_type"":""%3"",""timestamp"":""%4"",""payload"":%5}",
         OL_session, _id, _type, call OL_fnc_timestamp, _payload];
-    // Only two events are possible in this scenario; extra guard protects later edits.
+    // Bounded in-memory outbox. Report at most one attack per three seconds.
     if (count OL_outbox >= 4) exitWith {["OUTBOX FULL: observation dropped"] call OL_fnc_status};
     OL_outbox pushBack [_id, "event", _body, _type];
     [format ["DETECTED %1 (event %2)", _type, _id]] call OL_fnc_status;
 };
 OL_fnc_checkpointHit = {
     params ["_unit", "_instigator"];
-    if (!isServer || {!local _unit} || {OL_checkpointReported}) exitWith {};
-    // Set the shared latch synchronously before any scheduling/network operation.
+    if (!isServer || {!local _unit} || {diag_tickTime - OL_lastCheckpointReport < 3}) exitWith {};
+    // Throttle synchronously before scheduling/network; fresh attacks can follow operator enable.
     OL_checkpointReported = true;
+    OL_lastCheckpointReport = diag_tickTime;
     private _side = "UNKNOWN";
     if (!isNull _instigator && {_instigator isKindOf "CAManBase"}) then {
         _side = switch (side group _instigator) do {

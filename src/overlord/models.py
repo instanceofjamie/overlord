@@ -45,7 +45,7 @@ class CheckpointAttacked(Envelope):
 
 
 Observation = Annotated[MissionStarted | CheckpointAttacked, Field(discriminator="event_type")]
-observation_adapter: TypeAdapter[Observation] = TypeAdapter(Observation)
+observation_adapter: TypeAdapter[Observation] = TypeAdapter(Observation)  # type: ignore[arg-type]
 
 
 class IngestResult(Model):
@@ -56,3 +56,44 @@ class IngestResult(Model):
 class Decision(Model):
     action: Literal["no_action"] = "no_action"
     reason: Literal["observation_only"] = "observation_only"
+
+
+class Control(Model):
+    enabled: Annotated[bool, Field(strict=True)] = False
+    paused: Annotated[bool, Field(strict=True)] = False
+
+
+class Command(Model):
+    protocol_version: Literal["1.0"] = "1.0"
+    session_id: UUID
+    command_id: UUID
+    idempotency_key: UUID
+    triggering_event: UUID
+    action: Literal["dispatch_reserve"] = "dispatch_reserve"
+    asset: Literal["reserve_alpha"] = "reserve_alpha"
+    location: Literal["response_alpha"] = "response_alpha"
+    expires_at: AwareDatetime
+
+
+class Acknowledgement(Model):
+    protocol_version: Literal["1.0"]
+    session_id: UUID
+    command_id: UUID
+    idempotency_key: UUID
+    status: Literal["executed", "rejected", "expired", "failed"]
+    result: Literal[
+        "movement_order_assigned",
+        "invalid_command",
+        "execution_disabled",
+        "paused",
+        "reserve_ineligible",
+        "invalid_location",
+        "already_committed",
+        "expired",
+        "assignment_failed",
+        "uncertain",
+    ]
+
+
+class CommandPoll(Model):
+    session_id: UUID

@@ -1,73 +1,162 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-# Director foundation
+# Local bounded response architecture
 
-Implemented in the first Python slice for #7; partial groundwork for #2, #8,
-#9 and #10. This is an observation recorder, not an AI planner or command executor.
-The [local Arma demo](local-demo.md) adds a server-only observer and a Windows DLL
-fallback for 2.22; its API path is tested, but interactive game behaviour remains
-unverified. See [transport evidence and ecosystem review](transport-local.md).
+This milestone implements part of #2/#5/#8/#9/#10/#13. It stops at one deterministic
+reserve response. The prior observation path passed an operator Eden/outage playtest;
+the new executor still requires [live verification](local-demo.md).
 
 ```mermaid
 flowchart LR
-    CLI[Local simulation] -->|HTTP JSON| API[FastAPI validation]
-    API --> DB[(SQLite sessions and observations)]
-    API -->|Retrieve recorded observations| CLI
-    CLI --> Mock[Deterministic no_action provider]
-    SQF[Server-authoritative demo SQF - playtest pending] -.-> Transport[Future transport selected under issue 26]
-    Transport -.-> Native[Candidate native webRequest - unverified]
-    Transport -.-> DLL[Local 2.22 x64 extension fallback - game playtest pending]
-    Native -.->|Outbound HTTPS subject to issue 22| API
-    DLL -.->|Loopback HTTP only in local demo| API
+    Game[Authoritative SQF observer] --> Queue[Async DLL worker]
+    Queue -->|Loopback POST events| API[Typed FastAPI API]
+    API --> Rules[Deterministic bounded rules]
+    Rules --> DB[(SQLite events / responses / control)]
+    Human[Operator control CLI] --> API
+    Queue -->|Poll commands / POST acknowledgements| API
+    API -->|Data-only command| Queue
+    Queue --> Validator[Server SQF validator / processed ID ledger]
+    Validator -->|One MOVE order| Reserve[Preplaced owned reserve group]
 ```
 
-## Implemented components
+Arma owns world state, group eligibility, locality, validation and order assignment.
+`response.py` owns the deterministic rule, lifecycle and one-commitment budget.
+`storage.py` records the observation and decision in the same writer transaction;
+event retries cannot make another decision. `models.py` forbids extra properties.
+SQLite writes serialize approvals, issue and acknowledgement. No provider is invoked.
+The observation inspector and simulation/mock remain available; no SITREP formatter
+exists in this baseline. Rules do not create a general faction intelligence layer.
 
-- `config.py`: Pydantic environment settings, `.env` support, mock-only provider.
-- `models.py`: closed, discriminated observation schemas. Unknown fields are rejected.
-- `api.py`: application factory and lifespan initialization, health/version, session
-  registration, event ingestion and bounded observation retrieval. Synchronous
-  endpoints run SQLite work in FastAPI's worker pool.
-- `storage.py`: SQLite transactions, foreign keys, unique event IDs and receipt order.
-  Each operation owns and closes its connection; writes use `BEGIN IMMEDIATE`
-  and a five-second lock timeout. Storage errors return 503, not success.
-- `providers.py`: typed provider interface and a pure deterministic no-op mock.
-  Ingestion never invokes inference. The CLI calls the mock locally to demonstrate
-  restraint; no decision is persisted or exposed as an executable command.
-- `simulate.py`: finite HTTP client with timeouts and a fresh sample session per run.
-- `inspect.py`: reads the latest or selected session through the API, without a provider.
-- `logging.py`: JSON application logs with timestamp, level and event correlation
-  IDs; payloads, prompts, environment and credentials are not logged. Validation
-  errors do not echo submitted values. Uvicorn access logging is disabled.
+## Rules and operator boundary
 
-Solid arrows describe today’s local demonstration; dotted arrows are future
-production candidates; the DLL fallback is implemented and tested outside Arma,
-but its dotted game path still requires interactive playtest. All observation retrieval goes through
-the API; the simulation has no direct database connection.
+The only action is `dispatch_reserve`, asset `reserve_alpha`, location
+`response_alpha`. Neither coordinates, unit classes nor SQF can be supplied by the
+director. Mission setup owns the checkpoint guards; the response reserve is placed
+in `mission.sqm`, with no command-time spawning. Reserve PATH AI is disabled until
+an accepted command to keep recommendation-only tests stationary.
 
-## Experience direction and operating modes
+An attack means positive checkpoint guard Hit or Killed, throttled to once per 3s.
+Only `checkpoint_alpha` with a reported BLUFOR attacker can recommend dispatch;
+UNKNOWN, other checkpoints, stale (>120s), future (>5s), paused, cooling down,
+already approved or committed conditions produce durable `no_action` reasons.
+Cooldown defaults to 15s and is configured by `OVERLORD_RESPONSE_COOLDOWN_SECONDS`.
+It applies from a recommendation, not every rejected event. The rule proposes only
+one reserve; Arma performs the actual eligibility check at execution time.
 
-OVERLORD manages intent, pacing, communication and bounded operational interventions.
-Arma and existing tactical or campaign systems retain their simulation responsibilities.
-Future game adapters must declare capabilities and ownership of units, objectives and
-resources; proposals outside those capabilities or conflicting with another commander
-must be rejected ([#2](https://github.com/instanceofjamie/overlord/issues/2)). Game-specific adapters stay separate from director
-logic without building a generic engine framework.
+New sessions default to recommendation-only (`enabled=false`, `paused=false`).
+`PUT /v1/sessions/{uuid}/control` takes `{ "enabled": true, "paused": false }`.
+Use `python -m overlord.control --session UUID status|enable|disable|pause|resume`.
+Every actual mode change expires undispatched proposals/approvals and sets a fresh
+event-time boundary. Repeating an identical control request is idempotent. Enabling
+requires a fresh attack after that boundary and cooldown; old or buffered pre-enable
+attacks never become dispatches. The control state persists across director restart.
 
-| Mode | Behaviour | Status |
-| --- | --- | --- |
-| Observation-only | Record events without spawning units, changing waypoints or issuing gameplay commands | API and local demo SQF exist; real game delivery awaits playtest |
-| Recommendation-only | Record proposals, rationale, evidence references and expected effects without dispatch | Planned evaluation under [#15](https://github.com/instanceofjamie/overlord/issues/15) before live execution |
-| Authorised execution | Explicit operator configuration, capability/ownership checks, authoritative validation and human override gate dispatch | Future work; command lifecycle under [#13](https://github.com/instanceofjamie/overlord/issues/13) is required |
+Pause prevents new dispatch, including retries while paused. It cannot recall a
+command already returned into transport, or stop an assigned waypoint. Set
+`OL_localPaused=true` on the authoritative game machine for an immediate local
+veto; change an already-issued order using Zeus/editor controls. The executor
+never reapplies waypoints when receiving a duplicate. Revoking the group's
+`OL_owned` flag opts it out. No locality transfer or arbitrary remoteExec is used.
 
-The API records observations without invoking a model or changing gameplay. The
-simulation client retrieves them and invokes the deterministic mock locally. Its
-`no_action` output demonstrates the provider interface; it is neither a persisted
-server decision nor an executable command. These modes are direction, not a new
-configuration switch in this PR.
+## Command, wire and acknowledgement contracts
 
-The immediate target is the vanilla Operation First Contact prototype on Altis.
-Campaign memory (distinct from the per-session event log), personality and third-party
-adapters remain future work under [#27](https://github.com/instanceofjamie/overlord/issues/27).
+Observation protocol 1.0 is unchanged. New JSON commands are closed typed objects:
+
+```json
+{
+  "protocol_version": "1.0",
+  "session_id": "f32b654e-7c36-42f0-8a77-d2411d1f488c",
+  "command_id": "7d37bd70-2233-5292-8e81-d36bbab71b8f",
+  "idempotency_key": "7d37bd70-2233-5292-8e81-d36bbab71b8f",
+  "triggering_event": "025670d7-9d6e-4913-b0e7-81f144e67322",
+  "action": "dispatch_reserve",
+  "asset": "reserve_alpha",
+  "location": "response_alpha",
+  "expires_at": "2026-11-09T12:02:00Z"
+}
+```
+
+Identity is UUIDv5 from session + event + configured asset. Key equals command ID.
+Session registration supplies immutable mission metadata. Expiry is rounded down to
+a UTC minute 60–120s ahead; Arma checks UTC, not accelerated mission time.
+
+`GET /v1/sessions/{uuid}/responses` exposes mode, every attack decision, event UUID,
+reason, command, commitment, state and actual ack. `POST /v1/commands/poll` accepts
+`{"session_id":"UUID"}` and returns the bounded SQF data-array representation:
+
+```text
+["1.0", session_uuid, enabled, paused,
+ [command_uuid, idempotency_key, "dispatch_reserve", "reserve_alpha",
+  "response_alpha", [UTC_year, month, day, hour, minute]], status]
+```
+
+No command uses `[]` in slot 4. The response carries the last decision status;
+full explanations and trigger evidence are in the response view. Only one command
+is delivered per poll. JSON arrays/booleans are parsed with `parseSimpleArray`, never
+`compile`. The bridge downloads at most 1024 bytes on command polls and wraps the
+packet as `[http_status, packet]`. Existing event/session status-only polls remain
+compatible. Every request uses the same finite worker queue; SQF yields while waiting.
+
+`POST /v1/acknowledgements` accepts version, session UUID, command UUID, key, status
+(`executed|rejected|expired|failed`) and an allowlisted result code (OpenAPI defines
+all codes). `executed` requires `movement_order_assigned`: this acknowledges order
+assignment, never arrival. Identical ack retries return 200; changed acknowledgements,
+unknown commands, wrong session/key or acknowledgements before issue return 409
+(unknown sessions 404). Validation errors return 422 without echoing input.
+
+## Lifecycle, failure and restart
+
+| State | Meaning |
+| --- | --- |
+| proposed | Recommendation only, never retrievable for execution |
+| approved | Fresh eligible event while enabled; awaiting retrieval |
+| issued | Retrieval committed the session reserve budget before HTTP response |
+| executed | Arma reports movement order assignment |
+| rejected / expired / failed | Arma result, or unissued proposal expiry |
+| uncertain | Issued command expired without acknowledgement; it may have run |
+| no_action | Deliberate unsuitable-condition result |
+
+Issue consumes the reserve commitment even if transport fails, Arma rejects, or
+execution fails. It is never released automatically. Retries before expiry return
+only the same command. No second approved command can be created concurrently.
+After expiry, unresolved issue becomes uncertain and is no longer sent. A late
+actual acknowledgement may resolve uncertainty. The operator must inspect, rather
+than reissue under a new identity. This favours missed responses over double orders;
+it does **not** promise exactly-once execution.
+
+SQF validates server authority, active session/version, identity/key, expiry,
+allowlisted references, enabled/paused state, local veto, budget, live OPFOR group,
+no players, integration ownership, group locality, no added human waypoints and the
+configured marker position. Validation/latch/assignment runs unscheduled. It records
+ID and commitment **before** waypoint mutation; duplicates resend the recorded ack,
+without applying another order. An interrupted mutation retains a failed/uncertain
+record. Eligible execution enables PATH once, adds one MOVE waypoint and selects it.
+Subsequent Zeus/editor changes are not overwritten. References for engine semantics:
+[local](https://community.bistudio.com/wiki/local),
+[addWaypoint](https://community.bistudio.com/wiki/addWaypoint),
+[setCurrentWaypoint](https://community.bistudio.com/wiki/setCurrentWaypoint), and
+[dateToNumber](https://community.bistudio.com/wiki/dateToNumber).
+
+Director downtime cannot block gameplay: the DLL owns HTTP waits, SQF yields, and
+outbox retries retain IDs. A director restart with the same SQLite file restores
+mode, responses, commitment and unresolved identities. The game retains processed
+IDs/acks in mission memory. A fresh game session has a fresh UUID and defaults off.
+Saved-game rollback/load continuity is unsupported; restart the scenario instead.
+Deleting the DB loses audit history; the active game commitment still prevents a
+second order, but restoring state must not be inferred from an empty database.
+
+Migration 2 adds response/control tables without changing migration 1 or existing
+observations. Startup applies ordered migrations transactionally via `user_version`;
+newer unknown schemas fail startup. Back up SQLite with service stopped before
+upgrading; restore backup to downgrade. Events remain append-only; response rows
+materialize their latest lifecycle/result (not a separate append-only transition
+journal). Retention/redaction remains operator managed: no automatic purge, no player
+identity collection. Preserve records for an unresolved mission. This is for modest
+local demo traffic and a trusted loopback host, without authentication.
+
+HostHavoc, dedicated multiplayer, headless ownership migration, remote HTTPS/auth,
+native webRequest selection, wider action APIs, paid inference, tactical planning,
+campaign systems, third-party integrations and billing remain outside this milestone.
+See [transport evidence](transport-local.md) and [verification](verification.md).
 
 ## Implemented initial observation contract v1.0
 
@@ -110,101 +199,5 @@ Transactions make concurrent retries safe. Events are append-only through the AP
 
 `GET /v1/sessions/{session_id}/observations?offset=0&limit=100` returns receipt
 order, with limit 1–100 and nonnegative offset. Delayed or out-of-order events are
-accepted as reported observations; timestamps do not trigger actions, reorder receipts or establish
-faction knowledge. A checkpoint event need not wait for mission_started delivery.
-
-## Local demonstration adapter
-
-`missions/OperationFirstContact.Altis` owns scenario initialization and two
-server-local guards. Positive Hit and Killed handlers share one synchronous latch.
-The first harm/death of either guard produces one attack observation, including
-UNKNOWN attribution if instigator evidence is absent. See the playtest guide for
-the precise definition; suppression alone is not an attack observation here.
-The director cannot spawn units or issue commands; mission setup alone creates the
-scenario objects. The adapter owns this checkpoint, not arbitrary scenario units.
-
-The SQF outbox registers a new per-run session, then submits immutable v1.0 events.
-The DLL's worker sends only to loopback port 8000. Detection, acknowledgement and
-unavailability statuses are separate; HTTP acknowledgement follows database commit.
-In-memory buffering, retries and DLL lifecycle limits are in the transport record.
-No schema change was needed. `GET /v1/sessions?limit=20` (1–100) lists registrations
-newest-first; `overlord-inspect --latest` or `--session UUID` reads the observations
-through the API, without a model. Existing session registration does not reorder
-that listing. No SITREP is claimed before the real game connection is verified.
-
-## Persistence and migrations
-
-The default file is `var/overlord.sqlite3`. Startup applies ordered SQL migrations
-inside one transaction using SQLite `user_version`; repeated startup is safe.
-A newer schema fails startup rather than attempting a downgrade. Add migrations
-instead of changing applied statements. Back up the database while the service is
-stopped before upgrading; restore that backup to roll back. No automatic destructive
-migration, deletion, compaction or retention schedule is implemented. Session and
-event JSON and receipt timestamps persist across restart. Operators currently own
-backup/retention and log rotation. No player identities or game assets are collected.
-This is intended for one local service process and modest event volumes.
-
-## Planned game boundary and trust
-
-Arma remains authoritative. Future server-side SQF observes significant events;
-execution and multiplayer locality stay on the authoritative server/owning machine.
-The Python director deploys independently; no separate process may be required on
-the managed HostHavoc game server. Transport selection remains open under
-[#26](https://github.com/instanceofjamie/overlord/issues/26): compare native `webRequest` with an asynchronous x64 extension
-before implementation under [#11](https://github.com/instanceofjamie/overlord/issues/11). Native HTTP availability and required
-configuration on the production server are unverified. DLL permission in principle
-does not prove loading or outbound HTTPS connectivity.
-
-Either path must use non-blocking outbound communication, with no incoming connection
-to the game server assumed. Submit events and eventually retrieve proposals over
-authenticated HTTPS. Do not wait for network or inference round trips inside SQF;
-if a DLL is selected, enqueue bounded work and return promptly from `callExtension`,
-with waits on workers. Gameplay continues during director downtime.
-[#22](https://github.com/instanceofjamie/overlord/issues/22) must validate the actual server version, selected transport availability,
-authenticated outbound HTTPS, prompt return to SQF, response retrieval, retry safety
-and disconnect/reconnect behaviour. The checklist in [FinOps](finops.md) must precede
-real deployment.
-
-The future bridge needs bounded queues, timeouts, backoff, stable IDs, expiry and
-diagnostics. Its commands must be allowlisted typed proposals with bounded
-arguments, idempotency keys, expiry, authoritative SQF validation and execution
-acknowledgements (#8/#13). It must never accept arbitrary SQF. Human Zeus inspection,
-pause, cancellation and override are required before autonomous execution. The
-receipt log is an initial audit trail; command lifecycle and decisions are future work.
-
-The director's observation log is not faction intelligence. A future deliberation
-layer must select bounded, authorised faction knowledge rather than hand this
-entire log to enemy planning ([#16](https://github.com/instanceofjamie/overlord/issues/16)). In particular, `attacking_side` is
-currently a reported observation, not automatically knowledge available to an enemy
-faction. Evidence provenance and faction-authorised context must be addressed before
-enemy planning. This PR adds no provenance fields or faction reasoning.
-
-If host transport is blocked, a trusted human Zeus client relay is a contingency,
-requiring explicit server-side role/owner checks, CfgRemoteExec allowlisting,
-schemas, cooldowns and idempotency. RCon alone is not a general SQF RPC interface.
-These are design requirements, not implemented or verified game integrations.
-
-This iteration has no authentication and binds to loopback by default. Remote
-operation requires a separate authenticated HTTPS transport design before exposure;
-the current API is for trusted local development. Body-level network quotas,
-transport authentication and replay policy beyond ID deduplication remain open.
-
-## Cost boundary and next increments
-
-Only the mock is configurable; there is no AWS SDK, infrastructure or paid call.
-Before adding a paid provider (#14/#19), implement per-session/month budgets,
-conservative in-flight reservations, token/invocation accounting, cooldowns,
-rate/concurrency bounds and deterministic fallback. The proposed £5/month target
-in FinOps is not enforced by this recorder. Independent hosting and inference are
-separate costs; no cloud standing resources are required.
-
-Next: produce a bounded deterministic structured SITREP from recorded observations
-under [#6](https://github.com/instanceofjamie/overlord/issues/6), separating observed facts, inference and unknowns. SITREPs are
-not implemented in this PR. Evaluate recommendation-only behaviour under [#15](https://github.com/instanceofjamie/overlord/issues/15)
-before live execution; command lifecycle under [#9](https://github.com/instanceofjamie/overlord/issues/9)/[#13](https://github.com/instanceofjamie/overlord/issues/13) remains a
-later requirement for dispatch. Complete ecosystem research under [#25](https://github.com/instanceofjamie/overlord/issues/25)
-before finalising broader interfaces or expanding the planner, and transport
-selection under [#26](https://github.com/instanceofjamie/overlord/issues/26) before bridge implementation. Host compatibility
-([#22](https://github.com/instanceofjamie/overlord/issues/22)) and mission acceptance ([#3](https://github.com/instanceofjamie/overlord/issues/3)) remain verification gates.
-A local-only demo observer and DLL fallback now exist; production bridge validation,
-Bedrock, dialogue, campaign, Antistasi, SaaS and billing remain outside this slice.
+accepted as reported observations; timestamps do not reorder receipts or establish faction knowledge. The bounded
+response rule rejects stale/future and pre-enable evidence. A checkpoint event need not wait for mission_started delivery.

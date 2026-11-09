@@ -29,7 +29,7 @@ jobs:
           Copy-Item build/windows/Release/overlord_bridge_x64.dll build/demo/@OVERLORD/
           Copy-Item missions build/demo/ -Recurse
           Copy-Item tools/install-demo.ps1 build/demo/tools/
-          Copy-Item docs/local-demo.md,docs/transport-local.md build/demo/docs/
+          Copy-Item docs/local-demo.md,docs/transport-local.md,docs/architecture.md,docs/verification.md build/demo/docs/
           Copy-Item LICENSE build/demo/
           Get-FileHash build/demo/@OVERLORD/overlord_bridge_x64.dll | Format-List | Out-File build/demo/SHA256.txt
       - uses: actions/upload-artifact@v4

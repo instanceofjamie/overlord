@@ -3,7 +3,7 @@ import logging
 import sqlite3
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import FastAPI, Query, Request, Response
@@ -13,8 +13,16 @@ from fastapi.responses import JSONResponse
 from overlord import __version__
 from overlord.config import Settings
 from overlord.logging import configure_logging
-from overlord.models import IngestResult, Observation, SessionCreate
+from overlord.models import (
+    Acknowledgement,
+    CommandPoll,
+    Control,
+    IngestResult,
+    Observation,
+    SessionCreate,
+)
 from overlord.providers import MockProvider, Provider
+from overlord.response import Responses
 from overlord.storage import Conflict, Store, UnknownSession
 
 log = logging.getLogger("overlord.api")
@@ -22,7 +30,7 @@ log = logging.getLogger("overlord.api")
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
-    store = Store(settings.database_path)
+    store = Store(settings.database_path, settings.response_cooldown_seconds)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -103,5 +111,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         limit: Annotated[int, Query(ge=1, le=100)] = 100,
     ) -> list[Observation]:
         return store.observations(session_id, offset, limit)
+
+    responses = Responses(store)
+
+    @app.get("/v1/sessions/{session_id}/responses")
+    def response_status(session_id: UUID) -> dict[str, Any]:
+        return responses.inspect(session_id)
+
+    @app.put("/v1/sessions/{session_id}/control", response_model=Control)
+    def response_control(session_id: UUID, mode: Control) -> Control:
+        return responses.set_control(session_id, mode)
+
+    @app.post("/v1/commands/poll")
+    def command_poll(request: CommandPoll) -> list[Any]:
+        return responses.poll(request.session_id)
+
+    @app.post("/v1/acknowledgements")
+    def acknowledge(ack: Acknowledgement) -> dict[str, str]:
+        responses.acknowledge(ack)
+        return {"status": "recorded"}
 
     return app

@@ -45,7 +45,10 @@ int main(int argc, char** argv) {
             if (entry(out, sizeof(out), "poll", poll, 1)) throw std::runtime_error("Poll failed");
             if (std::string(out) == "[-1]") continue;
             std::cout << "result=" << out << std::endl;
-            return std::string(out) == "[" + std::string(argv[5]) + "]" ? 0 : 1;
+            auto expected = "[" + std::string(argv[5]);
+            if (std::string(argv[3]) == "command" && std::string(argv[5]) == "200")
+                return std::string(out).find(expected + ",[") == 0 ? 0 : 1;
+            return std::string(out) == expected + "]" ? 0 : 1;
         }
         throw std::runtime_error("Request did not finish within smoke-test deadline");
     } catch (const std::exception& exc) { std::cerr << exc.what() << std::endl; return 1; }

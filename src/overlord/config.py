@@ -14,3 +14,5 @@ class Settings(BaseSettings):
     port: int = Field(default=8000, ge=1, le=65535)
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     provider: Literal["mock"] = "mock"
+
+    response_cooldown_seconds: int = Field(default=15, ge=0, le=3600)

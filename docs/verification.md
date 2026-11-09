@@ -143,3 +143,49 @@ was supplied. Repeat-hit and fatal-first-hit cases, dedicated/hosted multiplayer
 HostHavoc and remote authentication/HTTPS remain outside the confirmed evidence.
 The requested local observation-and-recovery demonstration is complete; no broad
 roadmap issue is closed on that basis.
+
+## Bounded local reserve response — 2026-11-09
+
+Started feature branch `feat/bounded-reserve-response` from latest fetched main
+`292d0f8`, after reviewing merged PRs #24/#28, issues #2/#5/#8/#9/#10/#13 and
+transport issue #26/comment plus `docs/transport-local.md`. No AGENTS.md was found.
+The existing operator-confirmed asynchronous local transport and mission are reused.
+
+Performed for this increment:
+
+- Python 3.12: **36 tests passed**, including event replay, recommendation-only,
+  enable invalidating proposals, cooldown, unsuitable/stale/future/pre-enable events,
+  concurrent approvals/retrieval, pause/disable/resume, expiry, issue uncertainty,
+  persisted restart identity and commitment, duplicate/conflicting/unknown/wrong-key
+  acknowledgements, ack-before-issue, and v1→v2 migration preserving observations.
+  Threaded tests ran outside the restricted sandbox. The existing upstream
+  Starlette/HTTPX deprecation warning remains.
+- Ruff lint/format and strict mypy (12 modules) passed; `git diff --check` passed.
+  The installed Pydantic/mypy combination required an explicit arg-type suppression
+  at the existing discriminated-union TypeAdapter construction; runtime schema and
+  observation validation tests remain unchanged.
+- Linux native queue regression passed (CMake/CTest), including nested command
+  response preservation and terminal consumption. MinGW x64 DLL and smoke harness
+  built successfully. Existing asynchronous worker and finite queue remain in use.
+- Executed Windows `extension_smoke.exe`/DLL via WSL against an isolated real
+  loopback API/temporary database: session 201, disabled poll with empty command,
+  enabled fresh attack 201, bounded command retrieval, identical command on retry,
+  two identical synthetic acknowledgements 200, then empty poll with executed state.
+  Sample enqueue latency was 0ms. This verifies Windows ABI/HTTP response retrieval
+  and persistence, **not** game execution: the harness submitted the success ack.
+- SQF-VM v2026.04.03-ed9f5f5 syntax parsed all five SQF scripts plus mission.sqm
+  and description.ext. Syntax-only; not an engine/locality/terrain test.
+- The broader existing offline/stalled-response harness was attempted through a
+  temporary WSL path-translation wrapper, stalled without output and was terminated.
+  Do not count that attempt as a pass. Windows CI runs the extended native harness
+  directly, including offline/duplicates/invalid-version/timeout and new command/ack
+  cases, plus installer regression. Its result must be checked separately on the PR.
+
+The updated Windows/Eden instructions in `docs/local-demo.md` cover recommendation
+inspection, fresh attack after explicit enable, movement/ack, replay waypoint count,
+separate sessions, pause/local veto, director outage and human order override.
+These new Arma behaviours **still need operator playtest**; no movement or exactly-once
+execution claim is made. The prior observation/downtime playtest remains historical
+evidence for that earlier path. Dedicated multiplayer, HostHavoc, saved-game rollback,
+remote authentication and production transport remain unverified and out of scope.
+No paid inference, spawning commands, third-party integrations or infrastructure added.

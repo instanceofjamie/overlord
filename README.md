@@ -4,11 +4,11 @@
 
 OVERLORD aims to direct the cooperative Arma 3 experience through intent, pacing, communication and bounded operational interventions. Arma and existing tactical or campaign systems retain their simulation responsibilities. Future action proposals must respect faction knowledge and be validated by the authoritative game server.
 
-> **Status:** Pre-alpha observation recorder with a local Arma 3 demo awaiting interactive playtest. No AI gameplay execution.
+> **Status:** Pre-alpha local deterministic reserve response. Observation/downtime playtest confirmed; the new movement loop awaits Eden playtest. No LLM.
 
 ## First playable target
 
-**Operation First Contact** remains the immediate vanilla prototype target: a small co-op squad investigates an OPFOR checkpoint on Altis. Future interventions may include bounded reinforcements, radio updates, objective changes or deliberate restraint, subject to limited resources and faction knowledge. Today’s implementation only records simulated observations; it does not change gameplay.
+**Operation First Contact** remains the immediate vanilla prototype target: a small co-op squad investigates an OPFOR checkpoint on Altis. Future interventions may include bounded reinforcements, radio updates, objective changes or deliberate restraint, subject to limited resources and faction knowledge. The local demo records real checkpoint events and defaults to recommendation-only. Explicit execution permission lets one preplaced reserve group receive one configured movement order per session.
 
 ## Roadmap
 
@@ -34,7 +34,7 @@ See the [issue tracker](https://github.com/instanceofjamie/overlord/issues) for 
 
 ## Proposed technical direction
 
-Arma 3 (SQF) ↔ transport to be selected ↔ independently deployed Python director (FastAPI, Pydantic, SQLite) ↔ optional model provider. [#26](https://github.com/instanceofjamie/overlord/issues/26) compares native `webRequest` with an asynchronous x64 extension before bridge implementation under [#11](https://github.com/instanceofjamie/overlord/issues/11). Native HTTP availability on the production server is unverified. The selected transport must be non-blocking and outbound, require no extra process on the managed game host, and pass HostHavoc validation under [#22](https://github.com/instanceofjamie/overlord/issues/22).
+Arma 3 (SQF) ↔ local asynchronous x64 DLL ↔ independently deployed Python director (FastAPI, Pydantic, SQLite) ↔ optional model provider. [#26](https://github.com/instanceofjamie/overlord/issues/26) compares native `webRequest` with an asynchronous x64 extension before bridge implementation under [#11](https://github.com/instanceofjamie/overlord/issues/11). Native HTTP availability on the production server is unverified. The selected transport must be non-blocking and outbound, require no extra process on the managed game host, and pass HostHavoc validation under [#22](https://github.com/instanceofjamie/overlord/issues/22).
 
 This is a provisional architecture; see [#2](https://github.com/instanceofjamie/overlord/issues/2) for design decisions.
 
@@ -42,10 +42,10 @@ This is a provisional architecture; see [#2](https://github.com/instanceofjamie/
 
 - **Observation-only:** collect and record events without issuing gameplay commands.
   The local recorder and demo SQF observer are implemented; the real in-game path
-  awaits interactive playtest.
-- **Recommendation-only (planned):** record proposals, rationale, evidence and expected
+  was confirmed by the operator on 2026-11-08.
+- **Recommendation-only (default):** record proposals, rationale, evidence and expected
   effects without dispatching commands; evaluate this before live execution under [#15](https://github.com/instanceofjamie/overlord/issues/15).
-- **Authorised execution (planned):** explicit operator configuration, capability and
+- **Authorised execution (bounded demo):** explicit operator configuration, capability and
   ownership checks, authoritative validation and human override gate any dispatch.
 
 Future adapters must declare capabilities and ownership of units, objectives and
@@ -61,16 +61,25 @@ This project is being developed in the open; architecture and issue feedback are
 
 OVERLORD is an independent community project, not affiliated with Bohemia Interactive.
 
-## Local Arma observation demo
+## Local Arma reserve response demo
 
-The first vanilla Altis mission and asynchronous Windows x64 bridge are in
-[the Windows setup and playtest guide](docs/local-demo.md). Start the independent
-loopback director, load Operation First Contact and shoot a checkpoint guard;
-then use `overlord-inspect --latest` (or `--session UUID`) to read persisted events.
-The API never invokes a model or changes gameplay. The DLL/API path is tested;
-interactive Arma firing and terrain placement still need the documented playtest.
-[Transport evidence](docs/transport-local.md) selects the DLL fallback for the
-installed 2.22 build; native HTTP and HostHavoc production transport remain open.
+Follow [Windows/Eden setup and exact playtest](docs/local-demo.md): attack the
+checkpoint, inspect a recommendation, enable execution explicitly, then trigger a
+fresh eligible attack. The preplaced reserve receives one movement order; its Arma
+acknowledgement is persisted. Retried command identities do not add orders.
+
+```sh
+python -m overlord.control --session SESSION_UUID status
+python -m overlord.control --session SESSION_UUID enable
+python -m overlord.control --session SESSION_UUID pause
+```
+
+Old proposals expire on mode changes; enabling never silently dispatches them.
+Pause prevents new dispatch, while an already-issued movement order continues.
+See [protocol/lifecycle and failure semantics](docs/architecture.md). Default
+cooldown is 15s (`OVERLORD_RESPONSE_COOLDOWN_SECONDS`). No inference is invoked.
+[Transport evidence](docs/transport-local.md) selects the local DLL fallback for
+2.22; HostHavoc and dedicated multiplayer remain subsequent milestones.
 
 ## Local director quick start
 
@@ -103,7 +112,7 @@ overlord-simulate --url http://127.0.0.1:8000
 The simulation registers a fresh Operation First Contact session on Altis, submits
 mission start and checkpoint attack observations, retrieves both and prints JSON
 with `no_action` results from the deterministic mock invoked locally by the simulation
-client. The API records observations without invoking a model or changing gameplay.
+client. The API also records deterministic response decisions without invoking a model; default mode never dispatches.
 The mock output is demonstration behaviour, not a persisted server decision or an
 executable command. The client exits after retrieval; stop the service with Ctrl-C.
 The observations remain in `var/overlord.sqlite3` across
@@ -133,7 +142,7 @@ Use feature branches and small issue-linked pull requests. Format changes with
 `ruff format .`; production code uses strict mypy checks, Pydantic boundary
 validation and pytest behavior tests. CI runs the same checks on Python 3.12.
 See [architecture and protocol](docs/architecture.md) for components, retry and
-ordering semantics, migrations, limitations and the future outbound-only game
+ordering semantics, migrations, limitations and the local outbound-only game
 bridge. The current slice addresses #7 with partial groundwork for #2/#8/#9/#10;
 it does not implement their full decision, command or game integration criteria.
 
@@ -144,7 +153,7 @@ Produce a bounded, deterministic structured SITREP from recorded observations un
 The implemented initial observation contract v1.0 retains its current schema and
 version validation; ecosystem research under [#25](https://github.com/instanceofjamie/overlord/issues/25) and real SQF requirements
 under [#6](https://github.com/instanceofjamie/overlord/issues/6)/[#8](https://github.com/instanceofjamie/overlord/issues/8) should inform its evolution before broader interfaces
-are finalised. Complete [#26](https://github.com/instanceofjamie/overlord/issues/26) before implementing a bridge.
+are finalised. Complete [#26](https://github.com/instanceofjamie/overlord/issues/26) before selecting production transport.
 
 `attacking_side` currently records a reported observation; it is not automatically
 knowledge available to an enemy faction. Evidence provenance and faction-authorised
