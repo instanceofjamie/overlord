@@ -89,6 +89,12 @@ that assigning a movement order proves arrival. See [architecture](docs/architec
 and [verification](docs/verification.md). No inference, spawning commands or new
 gameplay command family was added.
 
+## AWS game hosting plan
+
+[Architecture, London cost envelope and proposed operator steps](docs/aws-hosting-design.md)
+cover standalone Antistasi Ultimate hosting under [#32](https://github.com/instanceofjamie/overlord/issues/32).
+This is a planning proposal; AWS deployment and the hosting CLI are not implemented.
+
 ## Local director quick start
 
 Requires Python 3.12+ with pip and venv. No Arma, AWS account, cloud credentials or

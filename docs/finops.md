@@ -75,3 +75,10 @@ Working interpretation (updated 2026-11-08 for transport selection under [#26](h
 - A VPS is an option, **not** a requirement, for the external director. Event-driven services may offer lower idle costs.
 
 This updates the preliminary concerns tracked by [issue #22](https://github.com/instanceofjamie/overlord/issues/22). Preserve a trusted-client relay as fallback only if the selected direct server transport fails.
+
+## Separate game-hosting cost envelope
+
+The [10 November 2026 AWS hosting design](aws-hosting-design.md) models London EC2,
+retained storage, backups and control costs for 5–10-player modded Antistasi Ultimate.
+This optional game-hosting spend is separate from the proposed £5 AI budget above.
+No hosting resources have been provisioned; retained EBS has an explicit stopped cost.

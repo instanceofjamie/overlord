@@ -1,0 +1,356 @@
+{
+  "retrieved_on": "2026-11-10",
+  "region": "eu-west-2",
+  "currency": "USD",
+  "source": "AWS public regional offer CSVs; selected rows only, current URLs are mutable. No account or bill queried.",
+  "offers": [
+    {
+      "service": "AmazonEC2",
+      "url": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/eu-west-2/index.csv",
+      "publication_date": "2026-11-07T00:28:52Z",
+      "version": "20261107002852",
+      "download_sha256": "e7e22453630ecc232e1bfb70b65892233e42114cda2e04cb9367ae299f8460c3",
+      "rates": [
+        {
+          "SKU": "3T62XXBWN7FHHCS6",
+          "RateCode": "3T62XXBWN7FHHCS6.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.26806 per On Demand Linux m7a.xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.2680600000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:m7a.xlarge",
+          "Instance Type": "m7a.xlarge",
+          "Operating System": "Linux",
+          "Memory": "16 GiB",
+          "vCPU": "4"
+        },
+        {
+          "SKU": "6CPRT2R6TWFU5BU5",
+          "RateCode": "6CPRT2R6TWFU5BU5.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.45206 per On Demand Windows m7a.xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.4520600000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:m7a.xlarge",
+          "Instance Type": "m7a.xlarge",
+          "Operating System": "Windows",
+          "Memory": "16 GiB",
+          "vCPU": "4"
+        },
+        {
+          "SKU": "HC6BRCD65E8APNZG",
+          "RateCode": "HC6BRCD65E8APNZG.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.22 per On Demand Linux z1d.large Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.2200000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:z1d.large",
+          "Instance Type": "z1d.large",
+          "Operating System": "Linux",
+          "Memory": "16 GiB",
+          "vCPU": "2"
+        },
+        {
+          "SKU": "HH8R27YE25JXENNW",
+          "RateCode": "HH8R27YE25JXENNW.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.4171 per On Demand Windows m7i.xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.4171000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:m7i.xlarge",
+          "Instance Type": "m7i.xlarge",
+          "Operating System": "Windows",
+          "Memory": "16 GiB",
+          "vCPU": "4"
+        },
+        {
+          "SKU": "M294H7RFQHZPENZG",
+          "RateCode": "M294H7RFQHZPENZG.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.8134 per On Demand Windows c8i.2xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.8134000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:c8i.2xlarge",
+          "Instance Type": "c8i.2xlarge",
+          "Operating System": "Windows",
+          "Memory": "16 GiB",
+          "vCPU": "8"
+        },
+        {
+          "SKU": "MJ9PYUE89BCM5XDZ",
+          "RateCode": "MJ9PYUE89BCM5XDZ.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.0928 per GB-month of General Purpose (gp3) provisioned storage - EU (London)",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.0928000000",
+          "Unit": "GB-Mo",
+          "usageType": "EUW2-EBS:VolumeUsage.gp3"
+        },
+        {
+          "SKU": "P2HE3ZFJ327NZU8V",
+          "RateCode": "P2HE3ZFJ327NZU8V.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.4454 per On Demand Linux c8i.2xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.4454000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:c8i.2xlarge",
+          "Instance Type": "c8i.2xlarge",
+          "Operating System": "Linux",
+          "Memory": "16 GiB",
+          "vCPU": "8"
+        },
+        {
+          "SKU": "PKXGMJUJDN8CZWQJ",
+          "RateCode": "PKXGMJUJDN8CZWQJ.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.85584 per On Demand Windows c7a.2xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.8558400000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:c7a.2xlarge",
+          "Instance Type": "c7a.2xlarge",
+          "Operating System": "Windows",
+          "Memory": "16 GiB",
+          "vCPU": "8"
+        },
+        {
+          "SKU": "Q2ESZXM96MCC7A8P",
+          "RateCode": "Q2ESZXM96MCC7A8P.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.312 per On Demand Windows z1d.large Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.3120000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:z1d.large",
+          "Instance Type": "z1d.large",
+          "Operating System": "Windows",
+          "Memory": "16 GiB",
+          "vCPU": "2"
+        },
+        {
+          "SKU": "RURAAFB8XBQ2MN9M",
+          "RateCode": "RURAAFB8XBQ2MN9M.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.2331 per On Demand Linux m7i.xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.2331000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:m7i.xlarge",
+          "Instance Type": "m7i.xlarge",
+          "Operating System": "Linux",
+          "Memory": "16 GiB",
+          "vCPU": "4"
+        },
+        {
+          "SKU": "VJNVE3JQK7XGHRUC",
+          "RateCode": "VJNVE3JQK7XGHRUC.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.3961 per On Demand Windows c7i.xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.3961000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:c7i.xlarge",
+          "Instance Type": "c7i.xlarge",
+          "Operating System": "Windows",
+          "Memory": "8 GiB",
+          "vCPU": "4"
+        },
+        {
+          "SKU": "VXGTA8YNSA8BY2G5",
+          "RateCode": "VXGTA8YNSA8BY2G5.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.48784 per On Demand Linux c7a.2xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.4878400000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:c7a.2xlarge",
+          "Instance Type": "c7a.2xlarge",
+          "Operating System": "Linux",
+          "Memory": "16 GiB",
+          "vCPU": "8"
+        },
+        {
+          "SKU": "W2ZUFMWTZ2WH8394",
+          "RateCode": "W2ZUFMWTZ2WH8394.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.2121 per On Demand Linux c7i.xlarge Instance Hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.2121000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-BoxUsage:c7i.xlarge",
+          "Instance Type": "c7i.xlarge",
+          "Operating System": "Linux",
+          "Memory": "8 GiB",
+          "vCPU": "4"
+        }
+      ]
+    },
+    {
+      "service": "AmazonS3",
+      "url": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/eu-west-2/index.csv",
+      "publication_date": "2026-11-09T15:43:10Z",
+      "version": "20261109154310",
+      "download_sha256": "62d2ccdd8d8f79a2084036cc5edcd726ccddf4f5b840b391576c505d717aef13",
+      "rates": [
+        {
+          "SKU": "3D99223WSVTX96UP",
+          "RateCode": "3D99223WSVTX96UP.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.0042 per 10,000 GET and all other requests",
+          "EffectiveDate": "2026-10-01",
+          "PricePerUnit": "0.0000004200",
+          "Unit": "Requests",
+          "usageType": "EUW2-Requests-Tier2"
+        },
+        {
+          "SKU": "CXT6934AJ2W6U8P9",
+          "RateCode": "CXT6934AJ2W6U8P9.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.0053 per 1,000 PUT, COPY, POST, or LIST requests",
+          "EffectiveDate": "2026-10-01",
+          "PricePerUnit": "0.0000053000",
+          "Unit": "Requests",
+          "usageType": "EUW2-Requests-Tier1"
+        },
+        {
+          "SKU": "DV3FSFEQ3QM4J6VP",
+          "RateCode": "DV3FSFEQ3QM4J6VP.JRTCKXETXF.PGHJ3S3EYE",
+          "PriceDescription": "$0.024 per GB - first 50 TB / month of storage used",
+          "EffectiveDate": "2026-10-01",
+          "PricePerUnit": "0.0240000000",
+          "Unit": "GB-Mo",
+          "usageType": "EUW2-TimedStorage-ByteHrs"
+        },
+        {
+          "SKU": "XZ7NCVU42TYGBKAQ",
+          "RateCode": "XZ7NCVU42TYGBKAQ.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.0033 per GB - AWS Outbound Base Data Transfer for MRAP from EU (London)",
+          "EffectiveDate": "2026-10-01",
+          "PricePerUnit": "0.0033000000",
+          "Unit": "GB",
+          "usageType": "EUW2-DataTransfer-Out-Bytes"
+        }
+      ]
+    },
+    {
+      "service": "AmazonCloudWatch",
+      "url": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/eu-west-2/index.csv",
+      "publication_date": "2026-11-04T21:35:32Z",
+      "version": "20261104213532",
+      "download_sha256": "425d0ebb306e5ef2d06380acac2bbdfb580dee7e9ddd20139b26616d59c134cc",
+      "rates": [
+        {
+          "SKU": "7YQ22RBNQBPK86VK",
+          "RateCode": "7YQ22RBNQBPK86VK.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.0315 per GB-mo of log storage -  EU (London)",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.0315000000",
+          "Unit": "GB-Mo",
+          "usageType": "EUW2-TimedStorage-ByteHrs"
+        },
+        {
+          "SKU": "S9T455EP2J2BR9R9",
+          "RateCode": "S9T455EP2J2BR9R9.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.5985 per GB custom log data ingested in Standard log class - EU (London)",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.5985000000",
+          "Unit": "GB",
+          "usageType": "EUW2-DataProcessing-Bytes"
+        }
+      ]
+    },
+    {
+      "service": "AmazonVPC",
+      "url": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonVPC/current/eu-west-2/index.csv",
+      "publication_date": "2026-11-05T18:19:45Z",
+      "version": "20261105181945",
+      "download_sha256": "10d085a4e2c6505bcf4943ca4350390141f94620ea92bb7ae9db2d7420ca9309",
+      "rates": [
+        {
+          "SKU": "72WT3ACG6YCT5UKY",
+          "RateCode": "72WT3ACG6YCT5UKY.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.005 per Idle public IPv4 address per hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.0050000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-PublicIPv4:IdleAddress"
+        },
+        {
+          "SKU": "CB3E2ZKHCN8Y7SYP",
+          "RateCode": "CB3E2ZKHCN8Y7SYP.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.005 per In-use public IPv4 address per hour",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.0050000000",
+          "Unit": "Hrs",
+          "usageType": "EUW2-PublicIPv4:InUseAddress"
+        }
+      ]
+    },
+    {
+      "service": "CodeBuild",
+      "url": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/CodeBuild/current/eu-west-2/index.csv",
+      "publication_date": "2026-09-11T12:46:25Z",
+      "version": "20260911124625",
+      "download_sha256": "60f20c921f74440722e84bf88c3baaefef4a9b1b5bbe1747f10f8a3a2f2ad8b2",
+      "rates": [
+        {
+          "SKU": "53ASR5FKBPB7XNS6",
+          "RateCode": "53ASR5FKBPB7XNS6.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "AWS CodeBuild - Build minutes on build.general1.small - EU (London)",
+          "EffectiveDate": "2026-08-01",
+          "PricePerUnit": "0.0050000000",
+          "Unit": "minutes",
+          "usageType": "EUW2-Build-Min:Linux:g1.small",
+          "Operating System": "Linux",
+          "Memory": "3 GB",
+          "vCPU": "2"
+        }
+      ]
+    },
+    {
+      "service": "AmazonDynamoDB",
+      "url": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonDynamoDB/current/eu-west-2/index.csv",
+      "publication_date": "2026-11-05T16:40:16Z",
+      "version": "20261105164016",
+      "download_sha256": "ef793e92507fffc4659a21e519b036ae335354e652ff2e792cb4586bf6031e4d",
+      "rates": [
+        {
+          "SKU": "6PCERDN3NMDKW474",
+          "RateCode": "6PCERDN3NMDKW474.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.7423 per million write request units Europe West 2",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.0000007423",
+          "Unit": "WriteRequestUnits",
+          "usageType": "EUW2-WriteRequestUnits"
+        },
+        {
+          "SKU": "8BMKSHZNW5CVQKKZ",
+          "RateCode": "8BMKSHZNW5CVQKKZ.JRTCKXETXF.G2A93NZ7DT",
+          "PriceDescription": "$0.00 per GB-Month of storage for first 25 free GB-Months",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.0000000000",
+          "Unit": "GB-Mo",
+          "usageType": "EUW2-TimedStorage-ByteHrs"
+        },
+        {
+          "SKU": "C3KVQJC3P2UZ6DKW",
+          "RateCode": "C3KVQJC3P2UZ6DKW.JRTCKXETXF.6YS6EN2CT7",
+          "PriceDescription": "$0.1487 per million read request units Europe West 2",
+          "EffectiveDate": "2026-11-01",
+          "PricePerUnit": "0.0000001487",
+          "Unit": "ReadRequestUnits",
+          "usageType": "EUW2-ReadRequestUnits"
+        }
+      ]
+    },
+    {
+      "service": "AWSDataTransfer",
+      "url": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSDataTransfer/current/eu-west-2/index.csv",
+      "publication_date": "2026-11-03T13:31:47Z",
+      "version": "20261103133147",
+      "download_sha256": "9e41fe558e1ce40118ccf71dd2c4a0d016eb5f357f866ca234c8211159ca6425",
+      "rates": [
+        {
+          "SKU": "QZ73H5RGR5JYYB4D",
+          "RateCode": "QZ73H5RGR5JYYB4D.JRTCKXETXF.Q3Z75P77EN",
+          "PriceDescription": "$0.090 per GB - first 10 TB / month data transfer out beyond the global free tier",
+          "EffectiveDate": "2026-06-01",
+          "PricePerUnit": "0.0900000000",
+          "Unit": "GB",
+          "usageType": "EUW2-DataTransfer-Out-Bytes"
+        }
+      ]
+    }
+  ]
+}
