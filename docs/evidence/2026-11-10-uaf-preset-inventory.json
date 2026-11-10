@@ -1,0 +1,283 @@
+{
+  "inspected_on": "2026-11-10",
+  "source_basename": "Arma 3 Preset UAF.html",
+  "source_sha256": "917b82a573a679c67b973307a48e184a2f7e6604f257ca17a954f1fd8821f662",
+  "source_bytes": 24041,
+  "mod_rows": 54,
+  "unique_workshop_ids": 54,
+  "duplicate_ids": [],
+  "invalid_rows": [],
+  "scope": "Offline HTML inventory only; no downloads, dependency resolution, version or OS compatibility proof. Display names are untrusted preset labels.",
+  "mods": [
+    {
+      "position": 1,
+      "display_name": "(CUP) Ukrainian Armed Forces",
+      "workshop_id": "3312210548"
+    },
+    {
+      "position": 2,
+      "display_name": "[REMASTERED!!!] BBM Varta | Варта ББМ",
+      "workshop_id": "3498496846"
+    },
+    {
+      "position": 3,
+      "display_name": "Antistasi Ultimate - Mod",
+      "workshop_id": "3020755032"
+    },
+    {
+      "position": 4,
+      "display_name": "Antistasi Ultimate - Ukraine Faction (RHS Edition)",
+      "workshop_id": "3176304647"
+    },
+    {
+      "position": 5,
+      "display_name": "Antistasi Ultimate Extender Wagner vs UAF (FPV DRONES)",
+      "workshop_id": "3497314078"
+    },
+    {
+      "position": 6,
+      "display_name": "Ares",
+      "workshop_id": "421908020"
+    },
+    {
+      "position": 7,
+      "display_name": "Armed Forces of Ukraine 2020 (CUP)",
+      "workshop_id": "2797587394"
+    },
+    {
+      "position": 8,
+      "display_name": "Blastcore Edited (standalone version)",
+      "workshop_id": "767380317"
+    },
+    {
+      "position": 9,
+      "display_name": "BloodLust",
+      "workshop_id": "667953829"
+    },
+    {
+      "position": 10,
+      "display_name": "Bulat UAV Detector by Nerexis",
+      "workshop_id": "3125837686"
+    },
+    {
+      "position": 11,
+      "display_name": "CBA_A3",
+      "workshop_id": "450814997"
+    },
+    {
+      "position": 12,
+      "display_name": "Chameleon Trenches",
+      "workshop_id": "2914901109"
+    },
+    {
+      "position": 13,
+      "display_name": "COUNTRY of HEROES II",
+      "workshop_id": "3220034755"
+    },
+    {
+      "position": 14,
+      "display_name": "CUP Terrains - Core",
+      "workshop_id": "583496184"
+    },
+    {
+      "position": 15,
+      "display_name": "CUP Terrains - CWA",
+      "workshop_id": "853743366"
+    },
+    {
+      "position": 16,
+      "display_name": "CUP Terrains - Maps",
+      "workshop_id": "583544987"
+    },
+    {
+      "position": 17,
+      "display_name": "CUP Terrains - Maps 2.0",
+      "workshop_id": "1981964169"
+    },
+    {
+      "position": 18,
+      "display_name": "CUP Units",
+      "workshop_id": "497661914"
+    },
+    {
+      "position": 19,
+      "display_name": "CUP Vehicles",
+      "workshop_id": "541888371"
+    },
+    {
+      "position": 20,
+      "display_name": "CUP Weapons",
+      "workshop_id": "497660133"
+    },
+    {
+      "position": 21,
+      "display_name": "Eden Objects",
+      "workshop_id": "686802825"
+    },
+    {
+      "position": 22,
+      "display_name": "Electronic Warfare REDUX",
+      "workshop_id": "3449308652"
+    },
+    {
+      "position": 23,
+      "display_name": "Flag manager",
+      "workshop_id": "3142700997"
+    },
+    {
+      "position": 24,
+      "display_name": "FPV Drone Crocus",
+      "workshop_id": "3045129955"
+    },
+    {
+      "position": 25,
+      "display_name": "Green Sea Terrain",
+      "workshop_id": "2645015212"
+    },
+    {
+      "position": 26,
+      "display_name": "Hendrix Russian and Ukraine Gear",
+      "workshop_id": "3414879940"
+    },
+    {
+      "position": 27,
+      "display_name": "JSRS SOUNDMOD",
+      "workshop_id": "861133494"
+    },
+    {
+      "position": 28,
+      "display_name": "LAFS - Light AI Fire Support",
+      "workshop_id": "3323604819"
+    },
+    {
+      "position": 29,
+      "display_name": "Lancet-3 & Izdelie-53",
+      "workshop_id": "3099936685"
+    },
+    {
+      "position": 30,
+      "display_name": "Mavic 3 - Improved",
+      "workshop_id": "3401580668"
+    },
+    {
+      "position": 31,
+      "display_name": "MIG-25 FOXBAT CORE",
+      "workshop_id": "2309868789"
+    },
+    {
+      "position": 32,
+      "display_name": "MSW Russian Uniforms",
+      "workshop_id": "2877560701"
+    },
+    {
+      "position": 33,
+      "display_name": "Pook FAV Pack",
+      "workshop_id": "2226283782"
+    },
+    {
+      "position": 34,
+      "display_name": "Pook FAV Pack - CUP Edition",
+      "workshop_id": "2233626342"
+    },
+    {
+      "position": 35,
+      "display_name": "Post Process Effects",
+      "workshop_id": "656307117"
+    },
+    {
+      "position": 36,
+      "display_name": "RHSAFRF",
+      "workshop_id": "843425103"
+    },
+    {
+      "position": 37,
+      "display_name": "RHSGREF",
+      "workshop_id": "843593391"
+    },
+    {
+      "position": 38,
+      "display_name": "RHSSAF",
+      "workshop_id": "843632231"
+    },
+    {
+      "position": 39,
+      "display_name": "RHSTERRACORE",
+      "workshop_id": "2288691268"
+    },
+    {
+      "position": 40,
+      "display_name": "RHSUSAF",
+      "workshop_id": "843577117"
+    },
+    {
+      "position": 41,
+      "display_name": "RMTAS: Russian Modern Tank Armor System",
+      "workshop_id": "3022303361"
+    },
+    {
+      "position": 42,
+      "display_name": "Russian Modern Tank Armor System SUBMOD",
+      "workshop_id": "3022840610"
+    },
+    {
+      "position": 43,
+      "display_name": "Russian Tank Series(Reupload )",
+      "workshop_id": "3708849490"
+    },
+    {
+      "position": 44,
+      "display_name": "Squad Ukraine",
+      "workshop_id": "2227988729"
+    },
+    {
+      "position": 45,
+      "display_name": "Su 24 Air Force of Ukraine+Storm shadow",
+      "workshop_id": "3031012172"
+    },
+    {
+      "position": 46,
+      "display_name": "Su-27CM Air Force of Ukraine",
+      "workshop_id": "2998773063"
+    },
+    {
+      "position": 47,
+      "display_name": "SU-35 Flanker E",
+      "workshop_id": "743108251"
+    },
+    {
+      "position": 48,
+      "display_name": "Terrain Lib",
+      "workshop_id": "2966168738"
+    },
+    {
+      "position": 49,
+      "display_name": "Trencher - Eden Trench Generation",
+      "workshop_id": "3256534418"
+    },
+    {
+      "position": 50,
+      "display_name": "UAF Vehicles Pack",
+      "workshop_id": "2965680724"
+    },
+    {
+      "position": 51,
+      "display_name": "UAF Vehicles Pack [CUP Compat]",
+      "workshop_id": "3143098782"
+    },
+    {
+      "position": 52,
+      "display_name": "UAZ 452 (Bukhanka)",
+      "workshop_id": "3286166229"
+    },
+    {
+      "position": 53,
+      "display_name": "Ukrainian Factions Project",
+      "workshop_id": "2673284246"
+    },
+    {
+      "position": 54,
+      "display_name": "Zeus Enhanced",
+      "workshop_id": "1779063631"
+    }
+  ]
+}
